@@ -1,57 +1,72 @@
 from flask import Flask, render_template, jsonify
 import os
 
-# Import your job fetcher
+app = Flask(__name__)
+
+# -----------------------------
+# IMPORT JOB FETCHER SAFELY
+# -----------------------------
 try:
     from fetch_jobs import get_jobs
 except Exception as e:
     print("⚠️ Error importing fetch_jobs:", e)
-    def get_jobs():
-        return []
 
-# Initialize app
-app = Flask(__name__)
+    def get_jobs():
+        # fallback data so app never crashes
+        return [
+            {
+                "title": "Sample Job",
+                "company": "Demo Inc",
+                "location": "Remote",
+                "salary": "$100k",
+                "fit_score": 75
+            }
+        ]
+
 
 # -----------------------------
 # HOME ROUTE
 # -----------------------------
 @app.route("/")
 def home():
-    try:
-        return render_template("index.html")
-    except Exception as e:
-        return f"❌ Template Error: {str(e)}", 500
+    return render_template("index.html")
 
 
 # -----------------------------
-# API ROUTE - JOBS
+# API: JOBS
 # -----------------------------
 @app.route("/api/jobs")
-def jobs():
+def api_jobs():
     try:
-        data = get_jobs()
-        return jsonify(data)
+        jobs = get_jobs()
+        return jsonify(jobs)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 # -----------------------------
-# API ROUTE - STATS (OPTIONAL)
+# API: STATS
 # -----------------------------
 @app.route("/api/stats")
-def stats():
+def api_stats():
     try:
         jobs = get_jobs()
+        total = len(jobs)
+
+        avg_fit = 0
+        if total > 0:
+            avg_fit = int(sum(j.get("fit_score", 0) for j in jobs) / total)
+
         return jsonify({
-            "total_jobs": len(jobs),
-            "avg_fit_score": int(sum(j.get("fit_score", 0) for j in jobs) / len(jobs)) if jobs else 0
+            "total_jobs": total,
+            "avg_fit_score": avg_fit
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 # -----------------------------
-# HEALTH CHECK (for Render)
+# HEALTH CHECK (Render)
 # -----------------------------
 @app.route("/health")
 def health():
@@ -59,15 +74,16 @@ def health():
 
 
 # -----------------------------
-# ERROR HANDLERS
+# ERROR HANDLING
 # -----------------------------
 @app.errorhandler(404)
-def not_found(e):
-    return "❌ Route Not Found", 404
+def handle_404(e):
+    return jsonify({"error": "Route not found"}), 404
+
 
 @app.errorhandler(500)
-def server_error(e):
-    return "❌ Internal Server Error", 500
+def handle_500(e):
+    return jsonify({"error": "Internal server error"}), 500
 
 
 # -----------------------------
@@ -75,5 +91,5 @@ def server_error(e):
 # -----------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    print(f"🚀 Starting EasyJobs on port {port}")
+    print(f"🚀 Running EasyJobs on port {port}")
     app.run(host="0.0.0.0", port=port)
