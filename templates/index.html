@@ -309,27 +309,48 @@
     .fit-ring .fit-num { font-size: 10px; font-weight: 700; }
     .fit-ring .fit-label { font-size: 9px; color: var(--muted2); }
 
-    .card-meta {
-      display: flex; flex-wrap: wrap; gap: 6px;
-      margin-bottom: 10px;
+    /* ── card tag chips row ─────────────────────────────── */
+    .card-tags {
+      display: flex; flex-wrap: wrap; gap: 5px;
+      margin-bottom: 8px;
     }
-    .meta-tag {
-      display: flex; align-items: center; gap: 4px;
-      font-size: 11px; color: var(--muted);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 3px 8px;
+    .ctag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 500;
+      padding: 3px 9px; border-radius: 20px;
+      border: 1px solid var(--border2);
+      color: var(--muted); background: var(--surface);
     }
-    .meta-tag i { font-size: 10px; color: var(--teal); }
-    .meta-tag.salary { color: var(--gold); border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.05); }
-    .meta-tag.salary i { color: var(--gold); }
-    .meta-tag.hot { color: #f97316; border-color: rgba(249,115,22,.3); background: rgba(249,115,22,.05); }
-    .meta-tag.hot i { color: #f97316; }
+    .ctag i { font-size: 10px; }
+    .ctag.loc  { color: #93c5fd; border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.08); }
+    .ctag.exp  { color: #c4b5fd; border-color: rgba(139,92,246,.35); background: rgba(139,92,246,.08); }
+    .ctag.lvl  { color: var(--teal); border-color: rgba(20,184,166,.35); background: rgba(20,184,166,.08); }
+    .ctag.wfh  { color: #6ee7b7; border-color: rgba(52,211,153,.35); background: rgba(52,211,153,.08); }
+    .ctag.hot  { color: #f97316; border-color: rgba(249,115,22,.35); background: rgba(249,115,22,.08); }
+    .ctag.cat  { color: #fde68a; border-color: rgba(253,230,138,.35); background: rgba(253,230,138,.06); }
 
+    /* ── salary row ─────────────────────────────────────── */
+    .card-salary {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+      margin-bottom: 8px;
+    }
+    .sal-local {
+      font-size: 12px; font-weight: 600; color: var(--gold);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .sal-local i { font-size: 11px; }
+    .sal-inr {
+      font-size: 12px; font-weight: 700; color: #4ade80;
+      background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.3);
+      padding: 2px 10px; border-radius: 20px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .sal-inr i { font-size: 11px; }
+
+    /* ── skills pills ───────────────────────────────────── */
     .card-skills {
       display: flex; flex-wrap: wrap; gap: 5px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .skill-pill {
       background: rgba(59,130,246,.1);
@@ -1009,26 +1030,47 @@ function renderJobs(jobs) {
 }
 
 function jobCard(j) {
-  const initials = j.company.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-  const fitColor = j.fit_score >= 85 ? '#14b8a6' : j.fit_score >= 70 ? '#f59e0b' : '#ef4444';
-  const circleOffset = 113 - (j.fit_score / 100) * 113;
-  const isSaved = saved.includes(j.id);
-  const daysLabel = j.posted_days_ago === 0 ? 'Today' :
-                    j.posted_days_ago === 1 ? 'Yesterday' :
-                    `${j.posted_days_ago}d ago`;
-  const isHot = j.posted_days_ago <= 3;
+  const co = j.company || 'Unknown';
+  const initials = co.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase() || '?';
+  const fitScore  = j.fit_score || 0;
+  const fitColor  = fitScore >= 85 ? '#14b8a6' : fitScore >= 70 ? '#f59e0b' : '#ef4444';
+  const circleOffset = 113 - (fitScore / 100) * 113;
+  const isSaved   = saved.includes(j.id);
+  const daysAgo   = j.posted_days_ago ?? 999;
+  const daysLabel = daysAgo === 0 ? 'Today' : daysAgo === 1 ? 'Yesterday' : `${daysAgo}d ago`;
+  const isNew     = daysAgo <= 2;
 
-  const matchedSkills = (j.skills_required||[]).filter(s =>
-    MY_SKILLS_LOWER.includes(s.toLowerCase().replace(' ','_').replace('_',' ')));
-  const unmatchedSkills = (j.skills_required||[]).filter(s =>
-    !MY_SKILLS_LOWER.includes(s.toLowerCase()));
+  // Seniority level derived from title
+  const tl = (j.title||'').toLowerCase();
+  const seniority = /director|vp\b|vice.?pres|head of|chief|president|principal/.test(tl) ? 'Director+' :
+                    /\bsenior\b|sr\.?\b|lead |manager|avp\b|associate director/.test(tl) ? 'Senior' :
+                    /\bjunior\b|jr\.?\b|graduate|intern|associate\b/.test(tl) ? 'Junior' : 'Mid-level';
+
+  // Location chip text
+  const locChip = (j.city && j.city.length > 2 && j.city !== j.country) ? j.city : (j.country || '');
+
+  // Work mode chip
+  const wm = (j.work_mode||'').toLowerCase();
+  const wmLabel = wm.includes('remote') || wm.includes('wfh') ? 'Remote / WFH' :
+                  wm.includes('hybrid') ? 'Hybrid' :
+                  wm.includes('on-site') || wm.includes('onsite') ? 'On-site' :
+                  wm.includes('freelance') ? 'Freelance' : '';
+
+  // Skills
+  const allSkills    = j.skills_required || [];
+  const matchedSkills  = allSkills.filter(s => MY_SKILLS_LOWER.some(k => s.toLowerCase().includes(k) || k.includes(s.toLowerCase().split(' ')[0])));
+  const unmatchedSkills = allSkills.filter(s => !matchedSkills.includes(s));
+
+  // Salary display
+  const salLocal = (j.salary_local && j.salary_local !== 'Not disclosed') ? j.salary_local : '';
+  const salINR   = (j.salary_inr_annual && j.salary_inr_annual !== 'Not disclosed') ? j.salary_inr_annual : '';
 
   return `<div class="job-card" id="card-${j.id}" onclick="openDetail('${j.id}')">
     <div class="card-top">
       <div class="card-company-logo">${initials}</div>
       <div class="card-title-block">
         <div class="card-title">${j.title}</div>
-        <div class="card-company"><span>${j.company}</span> · ${j.location}</div>
+        <div class="card-company"><span>${co}</span> · ${j.location||''}</div>
       </div>
       <div class="fit-ring">
         <svg viewBox="0 0 44 44">
@@ -1037,35 +1079,43 @@ function jobCard(j) {
             stroke-dasharray="113" stroke-dashoffset="${circleOffset}"
             stroke-linecap="round" transform="rotate(-90 22 22)"/>
           <text x="22" y="26" text-anchor="middle" fill="${fitColor}"
-            font-size="9" font-weight="700" font-family="Inter,sans-serif">${j.fit_score}%</text>
+            font-size="9" font-weight="700" font-family="Inter,sans-serif">${fitScore}%</text>
         </svg>
         <div class="fit-label" style="font-size:9px;color:var(--muted2)">Fit</div>
       </div>
     </div>
 
-    <div class="card-meta">
-      <div class="meta-tag salary"><i class="fa fa-indian-rupee-sign"></i>${j.salary_inr_annual} INR/yr</div>
-      <div class="meta-tag"><i class="fa fa-location-dot"></i>${j.city}, ${j.country}</div>
-      <div class="meta-tag"><i class="fa fa-briefcase"></i>${j.experience_required}</div>
-      ${j.is_mnc ? '<div class="meta-tag"><i class="fa fa-building"></i>MNC</div>' : ''}
-      ${isHot ? '<div class="meta-tag hot"><i class="fa fa-fire"></i>Hot</div>' : ''}
+    <div class="card-tags">
+      ${locChip ? `<span class="ctag loc"><i class="fa fa-location-dot"></i> ${locChip}</span>` : ''}
+      ${j.experience_required ? `<span class="ctag exp"><i class="fa fa-clock"></i> ${j.experience_required}</span>` : ''}
+      <span class="ctag lvl"><i class="fa fa-star"></i> ${seniority}</span>
+      ${wmLabel ? `<span class="ctag wfh"><i class="fa fa-house-laptop"></i> ${wmLabel}</span>` : ''}
+      ${isNew ? `<span class="ctag hot"><i class="fa fa-fire"></i> New</span>` : ''}
+      ${j.category ? `<span class="ctag cat">${j.category}</span>` : ''}
     </div>
 
+    ${(salLocal || salINR) ? `
+    <div class="card-salary">
+      ${salLocal ? `<span class="sal-local"><i class="fa fa-dollar-sign"></i> ${salLocal}</span>` : ''}
+      ${salINR   ? `<span class="sal-inr"><i class="fa fa-indian-rupee-sign"></i> ${salINR}</span>` : ''}
+    </div>` : ''}
+
+    ${(matchedSkills.length || unmatchedSkills.length) ? `
     <div class="card-skills">
       ${matchedSkills.slice(0,4).map(s=>`<span class="skill-pill matched">✓ ${s}</span>`).join('')}
       ${unmatchedSkills.slice(0,3).map(s=>`<span class="skill-pill">${s}</span>`).join('')}
-    </div>
+    </div>` : ''}
 
     <div class="card-footer">
       <div class="card-date"><i class="fa fa-clock" style="color:var(--teal);margin-right:4px;"></i>${daysLabel}</div>
       <div class="card-actions">
         <div class="icon-btn ${isSaved?'saved':''}" onclick="toggleSave(event,'${j.id}')" title="${isSaved?'Saved':'Save'}">
-          <i class="fa ${isSaved?'fa-bookmark':'fa-bookmark'}" style="${isSaved?'color:var(--gold)':''}"></i>
+          <i class="fa fa-bookmark" style="${isSaved?'color:var(--gold)':''}"></i>
         </div>
         <div class="icon-btn" onclick="copyLink(event,'${j.id}')" title="Copy link">
           <i class="fa fa-link"></i>
         </div>
-        <div class="icon-btn" onclick="openApply(event,'${j.apply_url}')" title="Apply now">
+        <div class="icon-btn" onclick="openApply(event,'${j.apply_url||'#'}')" title="Apply now">
           <i class="fa fa-external-link"></i>
         </div>
       </div>
