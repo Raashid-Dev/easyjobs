@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+
+# Environment
+.env
+.env.local
+venv/
+env/
+.venv/
+
+# Runtime data (keep sample + live for deploy, ignore lock files)
+data/jsearch_last_run.json
+data/last_updated.json
+logs/
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# IDE
+.vscode/
+.idea/
+*.swp

@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: easyjobs
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: ADZUNA_APP_ID
+        sync: false
+      - key: ADZUNA_APP_KEY
+        sync: false
+      - key: REED_API_KEY
+        sync: false
+      - key: JSEARCH_KEY
+        sync: false
+    plan: free

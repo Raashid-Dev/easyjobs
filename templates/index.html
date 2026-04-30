@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JobRadar — Analytics Jobs | Dubai & Switzerland</title>
+  <title>EasyJobs — Analytics, Ops & Tech Jobs</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -65,12 +65,14 @@
     }
     .logo-icon {
       width: 36px; height: 36px;
-      background: linear-gradient(135deg, var(--teal), var(--blue));
-      border-radius: 8px;
+      background: linear-gradient(135deg, #6366f1 0%, #3b82f6 55%, #14b8a6 100%);
+      border-radius: 9px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
+      box-shadow: 0 0 16px rgba(99,102,241,.4), 0 2px 8px rgba(20,184,166,.2);
     }
-    .logo span { color: var(--teal); }
+    .logo .easy { color: var(--text); }
+    .logo .jobs { color: var(--teal); }
+    .logo-dot { width:6px; height:6px; border-radius:50%; background:var(--green); margin-left:1px; animation:pulse 2s infinite; }
 
     .search-wrap {
       flex: 1;
@@ -560,8 +562,14 @@
 <!-- ══ HEADER ══════════════════════════════════════════════════════════════ -->
 <header>
   <div class="logo">
-    <div class="logo-icon">📡</div>
-    Job<span>Radar</span>
+    <div class="logo-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <rect x="2" y="7" width="16" height="11" rx="2.5" fill="white" opacity="0.92"/>
+        <path d="M7 7V5.5C7 4.67 7.67 4 8.5 4h3C12.33 4 13 4.67 13 5.5V7" stroke="white" stroke-width="1.6" stroke-linecap="round" opacity="0.92"/>
+        <path d="M7.5 11l1.8 1.8 3.2-3.2" stroke="#14b8a6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="easy">Easy</span><span class="jobs">Jobs</span><div class="logo-dot"></div>
   </div>
 
   <div class="search-wrap">
@@ -587,16 +595,24 @@
     <div class="stat-label">Jobs Found</div>
   </div>
   <div class="stat-item">
+    <div class="stat-num" id="s-usa">–</div>
+    <div class="stat-label">🇺🇸 USA</div>
+  </div>
+  <div class="stat-item">
     <div class="stat-num" id="s-dubai">–</div>
-    <div class="stat-label">Dubai</div>
+    <div class="stat-label">🇦🇪 Dubai</div>
   </div>
   <div class="stat-item">
     <div class="stat-num" id="s-swiss">–</div>
-    <div class="stat-label">Switzerland</div>
+    <div class="stat-label">🇨🇭 Switzerland</div>
   </div>
   <div class="stat-item">
-    <div class="stat-num" id="s-target">–</div>
-    <div class="stat-label">≥ 1.5 CR INR</div>
+    <div class="stat-num" id="s-mumbai">–</div>
+    <div class="stat-label">🏙 Mumbai</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" id="s-bangalore">–</div>
+    <div class="stat-label">💻 Bangalore</div>
   </div>
   <div class="stat-item">
     <div class="stat-num" id="s-fit">–</div>
@@ -620,11 +636,34 @@
       </div>
       <div class="filter-chips" id="filter-location">
         <div class="chip active" data-val="all" onclick="toggleChip(this,'location')">All</div>
+        <div class="chip" data-val="United States" onclick="toggleChip(this,'location')">🇺🇸 USA</div>
+        <div class="chip" data-val="United Kingdom" onclick="toggleChip(this,'location')">🇬🇧 UK</div>
         <div class="chip" data-val="Dubai" onclick="toggleChip(this,'location')">🇦🇪 Dubai</div>
         <div class="chip" data-val="Switzerland" onclick="toggleChip(this,'location')">🇨🇭 Switzerland</div>
-        <div class="chip" data-val="Zurich" onclick="toggleChip(this,'location')">Zurich</div>
-        <div class="chip" data-val="Basel" onclick="toggleChip(this,'location')">Basel</div>
-        <div class="chip" data-val="Geneva" onclick="toggleChip(this,'location')">Geneva</div>
+        <div class="chip" data-val="Germany" onclick="toggleChip(this,'location')">🇩🇪 Germany</div>
+        <div class="chip" data-val="Canada" onclick="toggleChip(this,'location')">🇨🇦 Canada</div>
+        <div class="chip" data-val="Singapore" onclick="toggleChip(this,'location')">🇸🇬 Singapore</div>
+        <div class="chip" data-val="Mumbai" onclick="toggleChip(this,'location')">🏙 Mumbai</div>
+        <div class="chip" data-val="Delhi" onclick="toggleChip(this,'location')">🏛 Delhi</div>
+        <div class="chip" data-val="Bangalore" onclick="toggleChip(this,'location')">💻 Bangalore</div>
+        <div class="chip" data-val="Australia" onclick="toggleChip(this,'location')">🇦🇺 Australia</div>
+        <div class="chip" data-val="France" onclick="toggleChip(this,'location')">🇫🇷 France</div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-title">
+        Category
+        <span class="clear-btn" onclick="clearFilter('category')">Clear</span>
+      </div>
+      <div class="filter-chips" id="filter-category">
+        <div class="chip active" data-val="all" onclick="toggleChip(this,'category')">All</div>
+        <div class="chip" data-val="Data Analytics" onclick="toggleChip(this,'category')">📊 Data Analytics</div>
+        <div class="chip" data-val="Backend" onclick="toggleChip(this,'category')">💻 Backend</div>
+        <div class="chip" data-val="Operations" onclick="toggleChip(this,'category')">⚙️ Operations</div>
+        <div class="chip" data-val="Digital Marketing" onclick="toggleChip(this,'category')">📣 Digital Mktg</div>
+        <div class="chip" data-val="Business Intelligence" onclick="toggleChip(this,'category')">📈 BI</div>
+        <div class="chip" data-val="Web Analytics" onclick="toggleChip(this,'category')">🌐 Web Analytics</div>
       </div>
     </div>
 
@@ -788,11 +827,13 @@ async function loadStats() {
   try {
     const res  = await fetch('/api/stats');
     const data = await res.json();
-    document.getElementById('s-total').textContent  = data.total;
-    document.getElementById('s-dubai').textContent  = data.dubai;
-    document.getElementById('s-swiss').textContent  = data.switzerland;
-    document.getElementById('s-target').textContent = data.above_target;
-    document.getElementById('s-fit').textContent    = data.avg_fit + '%';
+    document.getElementById('s-total').textContent     = data.total;
+    document.getElementById('s-usa').textContent       = data.usa       || '–';
+    document.getElementById('s-dubai').textContent     = data.dubai     || '–';
+    document.getElementById('s-swiss').textContent     = data.switzerland || '–';
+    document.getElementById('s-mumbai').textContent    = data.mumbai    || '–';
+    document.getElementById('s-bangalore').textContent = data.bangalore || '–';
+    document.getElementById('s-fit').textContent       = (data.avg_fit || '–') + (data.avg_fit ? '%' : '');
     document.getElementById('sourceLabel').querySelector('span').textContent =
       data.source === 'live' ? 'Live Data (Adzuna)' : 'Sample / Demo Data';
     updateLiveIndicator(data.source);
@@ -881,6 +922,7 @@ function getCheckedSkills() {
 function applyAllFilters() {
   const q        = document.getElementById('searchInput').value.toLowerCase().trim();
   const loc      = getActiveChip('location');
+  const category = getActiveChip('category');
   const jobtype  = getActiveChip('jobtype');
   const minExp   = parseInt(getActiveChip('exp')) || 0;
   const mncF     = getActiveChip('mnc');
@@ -898,8 +940,20 @@ function applyAllFilters() {
     return t.includes(q);
   });
 
-  if (loc && loc !== 'all') jobs = jobs.filter(j =>
-    (j.city+' '+j.country+' '+j.location).toLowerCase().includes(loc.toLowerCase()));
+  if (loc && loc !== 'all') {
+    const locL = loc.toLowerCase();
+    jobs = jobs.filter(j => {
+      const haystack = [j.city||'', j.country||'', j.location||''].join(' ').toLowerCase();
+      // Special city aliases
+      if (locL === 'bangalore') return haystack.includes('bangalore') || haystack.includes('bengaluru');
+      if (locL === 'delhi')     return haystack.includes('delhi') || haystack.includes('gurgaon') || haystack.includes('noida');
+      if (locL === 'mumbai')    return haystack.includes('mumbai') || haystack.includes('bombay');
+      return haystack.includes(locL);
+    });
+  }
+
+  if (category && category !== 'all') jobs = jobs.filter(j =>
+    (j.category||'').toLowerCase().includes(category.toLowerCase()));
 
   if (jobtype && jobtype !== 'all') jobs = jobs.filter(j => j.job_type === jobtype);
 
