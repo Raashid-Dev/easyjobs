@@ -159,6 +159,10 @@ def stats():
         'bangalore':   sum(1 for j in jobs if city_match(j, 'bangalore') or city_match(j, 'bengaluru')),
         'usa':         sum(1 for j in jobs if (j.get('country') or '').lower() == 'usa'),
         'canada':      sum(1 for j in jobs if (j.get('country') or '').lower() == 'canada'),
+        'europe':      sum(1 for j in jobs if (j.get('country') or '').lower() in
+                           ('united kingdom', 'uk', 'gb', 'germany', 'france', 'switzerland',
+                            'netherlands', 'spain', 'italy', 'sweden', 'norway', 'denmark',
+                            'belgium', 'austria', 'ireland', 'portugal')),
         'above_target':sum(1 for j in jobs if j.get('salary_usd_annual', 0) >= 180000),
         'avg_fit':     round(sum(j.get('fit_score', 85) for j in jobs) / len(jobs)) if jobs else 0,
         'source':      'live' if os.path.exists(LIVE_FILE) else 'sample'
