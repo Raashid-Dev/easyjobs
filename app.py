@@ -1,6 +1,6 @@
 import os, json, subprocess, re
 from datetime import datetime, timezone
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, redirect
 
 app = Flask(__name__)
 BASE        = os.path.dirname(__file__)
@@ -94,6 +94,14 @@ def save_timestamp(count, source='Adzuna'):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+# Redirect old /jobs and /dashboard URLs to new root
+@app.route('/jobs')
+@app.route('/dashboard')
+@app.route('/login')
+@app.route('/logout')
+def legacy_redirect():
+    return redirect('/', 301)
 
 @app.route('/api/jobs')
 def get_jobs():
