@@ -84,6 +84,11 @@ def load_jobs():
     filtered = [j for j in raw if not is_spam(j)]
     # Remove stale jobs older than 6 months (180 days)
     filtered = [j for j in filtered if (j.get('posted_days_ago') or 0) <= 180]
+    # Remove fictional sample/curated jobs (id starts with job_) and
+    # any job whose apply_url is a Google search (no real posting URL)
+    filtered = [j for j in filtered
+                if not (j.get('id','').startswith('job_'))
+                and not (j.get('apply_url','').startswith('https://www.google.com/search'))]
     return dedup_jobs(filtered)
 
 def save_timestamp(count, source='Adzuna'):

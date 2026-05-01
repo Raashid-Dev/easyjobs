@@ -922,15 +922,8 @@ def fetch_all_jobs():
     else:
         print("\n── Apify skipped (APIFY_TOKEN not set) ──────────────────────────")
 
-    print("\n── Curated sample ───────────────────────────────────────────────")
-    sample_path = os.path.join(BASE, 'data', 'sample_jobs.json')
-    added = 0
-    if os.path.exists(sample_path):
-        with open(sample_path) as f:
-            for j in json.load(f):
-                if j.get('id') not in seen_ids and not is_spam(j.get('title',''), j.get('description',''), j.get('company','')):
-                    seen_ids.add(j['id']); all_jobs.append(j); added += 1
-    print(f"  Added {added} curated jobs")
+    # Curated sample jobs intentionally excluded from live feed —
+    # they are fictional showcase entries without real apply URLs.
 
     before = len(all_jobs)
     all_jobs = dedup(all_jobs)
