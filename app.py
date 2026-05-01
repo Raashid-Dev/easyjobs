@@ -10,6 +10,7 @@ TS_FILE     = os.path.join(BASE, 'data', 'last_updated.json')
 
 # ── Spam / relevance filters ─────────────────────────────────────────────────
 TITLE_KW = [
+    # Analytics / BI / Data
     'analytic', 'analytics', 'data ', 'data-', ' data', 'intelligence', ' bi ',
     'dashboard', 'reporting', 'report', 'insight', 'kpi', 'digital marketing',
     'seo', 'sem', 'sql', 'power bi', 'tableau', 'looker', 'google analytics',
@@ -21,12 +22,42 @@ TITLE_KW = [
     # Operations
     'operations manager', 'revenue operations', 'marketing operations',
     'business operations', 'growth operations', 'operations analyst',
-    'ops manager', 'ops lead', 'operations lead',
+    'ops manager', 'ops lead', 'operations lead', 'operations director',
+    'head of operations', 'chief operating',
     # Backend / Engineering
     'backend developer', 'backend engineer', 'full stack developer',
     'fullstack developer', 'data engineer', 'analytics engineer',
     'software developer', 'python developer', 'node.js developer',
     'api developer', 'platform engineer', 'engineering manager',
+    # HR / Talent / People
+    'hr manager', 'hr director', 'hr business partner', 'hrbp',
+    'talent acquisition', 'talent management', 'recruitment manager', 'recruiter',
+    'people manager', 'people operations', 'human resources', 'workforce',
+    'learning & development', 'l&d manager', 'compensation', 'benefits manager',
+    'hr analytics', 'people analytics', 'head of hr', 'chief people', 'head of talent',
+    # CRM / Customer Success
+    'crm manager', 'crm director', 'crm analyst', 'crm lead', 'salesforce', 'hubspot',
+    'customer success manager', 'client success', 'cx manager', 'customer experience manager',
+    # Sales / Business Development
+    'sales manager', 'sales director', 'head of sales', 'vp sales',
+    'business development manager', 'business development director', 'bdm',
+    'account executive', 'enterprise sales', 'sales analytics', 'sales operations',
+    'commercial manager', 'commercial director', 'revenue manager',
+    'regional sales', 'national sales', 'country manager',
+    # Retail / Category / E-commerce
+    'store manager', 'retail manager', 'retail director', 'head of retail',
+    'category manager', 'merchandising manager', 'ecommerce manager', 'e-commerce manager',
+    'trade marketing', 'channel manager', 'omnichannel', 'buying manager',
+    # Finance / FP&A
+    'finance manager', 'finance director', 'head of finance', 'chief financial',
+    'financial analyst', 'financial planning', 'fp&a', 'treasury manager',
+    'financial controller', 'corporate finance', 'investment analyst',
+    'management reporting', 'financial reporting',
+    # Product / Marketing / Brand
+    'product manager', 'product director', 'head of product', 'vp product',
+    'marketing manager', 'marketing director', 'head of marketing', 'cmo',
+    'brand manager', 'brand director', 'growth marketing', 'content marketing',
+    'email marketing manager', 'performance marketing manager',
 ]
 DESC_KW = [
     'google analytics', 'ga4', 'power bi', 'tableau', 'looker', 'bigquery',
@@ -34,6 +65,10 @@ DESC_KW = [
     'digital marketing', 'seo', 'tracking', 'attribution', 'conversion',
     'insight', 'metric', 'measurement', 'operations', 'backend',
     'data engineer', 'revenue operations', 'python', 'api',
+    # New categories
+    'recruitment', 'talent acquisition', 'human resources', 'salesforce', 'hubspot',
+    'sales', 'business development', 'retail', 'store', 'ecommerce', 'crm',
+    'finance', 'financial', 'treasury', 'fp&a', 'product manager', 'brand',
 ]
 HARD_BLOCK_TITLE = [
     'driver', 'delivery boy', 'warehouse', 'nurse', 'teacher',
@@ -42,7 +77,7 @@ HARD_BLOCK_TITLE = [
     'domestic', 'factory worker', 'labourer', 'forklift',
     'content writer', 'copywriter', 'solicitor', 'lawyer', 'legal counsel',
     'construction manager', 'pre construction', 'quantity surveyor',
-    'customer engineer', 'finance business partner', 'management accounting',
+    'customer engineer', 'management accounting',
     'market risk controller', 'java developer', 'kotlin developer',
     'cloud engineer', 'sap ewm', 'sap bpa', 'generative ai engineer',
     'campus recruiter', 'associate (ca)', 'managing partner - banking',

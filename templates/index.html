@@ -961,11 +961,19 @@
       <div class="filter-chips" id="filter-category">
         <div class="chip active" data-val="all" onclick="toggleChip(this,'category')">All</div>
         <div class="chip" data-val="Data Analytics" onclick="toggleChip(this,'category')">📊 Data Analytics</div>
-        <div class="chip" data-val="Digital Marketing" onclick="toggleChip(this,'category')">📣 Digital Mktg</div>
         <div class="chip" data-val="Business Intelligence" onclick="toggleChip(this,'category')">📈 BI</div>
-        <div class="chip" data-val="Web Analytics" onclick="toggleChip(this,'category')">🌐 Web Analytics</div>
+        <div class="chip" data-val="HR & Talent" onclick="toggleChip(this,'category')">🧑‍💼 HR & Talent</div>
+        <div class="chip" data-val="Sales & BD" onclick="toggleChip(this,'category')">💼 Sales & BD</div>
+        <div class="chip" data-val="CRM & Customer Success" onclick="toggleChip(this,'category')">🤝 CRM</div>
+        <div class="chip" data-val="Retail & E-commerce" onclick="toggleChip(this,'category')">🛍️ Retail</div>
+        <div class="chip" data-val="Finance & FP&A" onclick="toggleChip(this,'category')">💰 Finance</div>
+        <div class="chip" data-val="Marketing" onclick="toggleChip(this,'category')">📣 Marketing</div>
+        <div class="chip" data-val="Product" onclick="toggleChip(this,'category')">🚀 Product</div>
         <div class="chip" data-val="Operations" onclick="toggleChip(this,'category')">⚙️ Operations</div>
-        <div class="chip" data-val="Backend" onclick="toggleChip(this,'category')">💻 Backend</div>
+        <div class="chip" data-val="Engineering" onclick="toggleChip(this,'category')">💻 Engineering</div>
+        <div class="chip" data-val="Digital Marketing" onclick="toggleChip(this,'category')">🌐 Digital Mktg</div>
+        <div class="chip" data-val="Web Analytics" onclick="toggleChip(this,'category')">📡 Web Analytics</div>
+        <div class="chip" data-val="E-commerce & Growth" onclick="toggleChip(this,'category')">📦 E-comm & Growth</div>
       </div>
     </div>
 
@@ -1625,18 +1633,7 @@ function buildDetail(j) {
   <div class="detail-section">
     <div class="detail-section-title">HR & Recruiter Contact</div>
     <div class="hr-card">
-      <div class="hr-name">${j.hr_contact.name}</div>
-      <div class="hr-title-text">${j.hr_contact.title}</div>
-      ${isValidEmail(j.hr_contact.email) ? `
-      <div class="hr-contact-row"><i class="fa fa-envelope"></i>
-        <a href="mailto:${j.hr_contact.email}">${j.hr_contact.email}</a></div>` : ''}
-      ${isValidPhone(j.hr_contact.phone) ? `
-      <div class="hr-contact-row"><i class="fa fa-phone"></i>
-        <a href="tel:${(j.hr_contact.phone||'').replace(/\s/g,'')}" style="color:var(--muted);text-decoration:none;">${j.hr_contact.phone}</a>
-      </div>` : ''}
-      ${j.hr_contact.linkedin ? `
-      <div class="hr-contact-row"><i class="fa-brands fa-linkedin"></i>
-        <a href="https://${j.hr_contact.linkedin}" target="_blank">${j.hr_contact.linkedin}</a></div>` : ''}
+      ${buildHRContact(j)}
     </div>
   </div>
 
@@ -1735,12 +1732,53 @@ function toggleSave(e, id) {
 
 function isDirectJobLink(url) {
   if (!url) return false;
-  // Direct job posting: contains a unique job ID path segment
+  // Trusted job board domains — all their URLs are specific job listings
+  if (/(reed\.co\.uk|remoteok\.com|arbeitnow\.com|adzuna\.|indeed\.|glassdoor\.|lever\.co|greenhouse\.io|workable\.com|workday\.com|smartrecruiters\.com|recruitee\.com|jobvite\.com|taleo\.net|jooble\.org|naukri\.com|naukrigulf\.com|bayt\.com|gulftalent\.com|bebee\.com|builtin\.com|whatjobs\.com|zerotaxjobs\.com|ai-search\.io|jobsora\.com|jobilize\.com|edarabia\.com|learn4good\.com|tiger-recruitment\.com|apply\.workable\.com|maaden\.com|portal\.tiger)/i.test(url)) return true;
+  // URL has a specific job ID in the path or query string
   return (
-    /\/(jobs\/view|details|viewjob|job\/|ad\/|jobs\/\d)/i.test(url) ||
-    /[?&](jk|jobId|jobid|job_id|id)=/i.test(url) ||
-    /(reed\.co\.uk|remoteok\.com|arbeitnow\.com|adzuna\.com|indeed\.|glassdoor\.|lever\.co|greenhouse\.io|workable\.com|workday\.com|smartrecruiters\.com|recruitee\.com|jobvite\.com|taleo\.net)/i.test(url)
+    /\/(jobs\/view|details|viewjob|job\/|ad\/|jobs\/\d|jdp\/)/i.test(url) ||
+    /[?&](jk|jobId|jobid|job_id|id)=/i.test(url)
   );
+}
+
+function extractPhoneFromDesc(desc) {
+  if (!desc) return null;
+  // Match international phone patterns — must be 7+ digits, not a year/salary number
+  const matches = desc.match(/(?:\+?[\d][\d\s\-\.\(\)]{8,20}[\d])/g) || [];
+  for (const m of matches) {
+    const digits = m.replace(/\D/g,'');
+    if (digits.length >= 7 && digits.length <= 15 && !/^(19|20)\d{2}/.test(digits)) {
+      return m.trim();
+    }
+  }
+  return null;
+}
+
+function buildHRContact(j) {
+  const hr = j.hr_contact || {};
+  const hasEmail  = isValidEmail(hr.email);
+  const hasPhone  = isValidPhone(hr.phone);
+  // Try to extract phone from description if hr_contact has none
+  const descPhone = (!hasPhone) ? extractPhoneFromDesc(j.description) : null;
+  const phoneToShow = hasPhone ? hr.phone : descPhone;
+  const coSlug = (j.company||'').toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
+  const liHRSearch = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent('Talent Acquisition ' + (j.company||''))}&origin=GLOBAL_SEARCH_HEADER`;
+
+  return `
+    <div class="hr-name">${hr.name || (j.company + ' Hiring Team')}</div>
+    <div class="hr-title-text">${hr.title || 'Talent Acquisition'}</div>
+    ${hasEmail ? `<div class="hr-contact-row"><i class="fa fa-envelope"></i>
+      <a href="mailto:${hr.email}">${hr.email}</a></div>` : ''}
+    ${phoneToShow ? `<div class="hr-contact-row"><i class="fa fa-phone" style="color:var(--green)"></i>
+      <a href="tel:${phoneToShow.replace(/\s/g,'')}" style="color:var(--green);font-weight:600;">${phoneToShow}</a>
+      ${descPhone ? '<span style="font-size:10px;color:var(--muted2);margin-left:4px;">(from posting)</span>' : ''}
+    </div>` : `<div class="hr-contact-row" style="color:var(--muted2);font-size:12px;">
+      <i class="fa fa-phone"></i> Phone not listed — use Find HR below</div>`}
+    <div class="hr-contact-row" style="margin-top:6px;">
+      <a href="${liHRSearch}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#0a66c2;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;">
+        <i class="fa-brands fa-linkedin"></i> Find HR on LinkedIn
+      </a>
+    </div>`;
 }
 
 function buildApplyButton(j) {

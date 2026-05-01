@@ -153,6 +153,81 @@ ADZUNA_SEARCHES = [
     ('be','data analytics manager','Belgium'),
     ('be','business intelligence manager','Belgium'),
     ('be','digital analytics manager','Belgium'),
+    # ── NEW CATEGORIES ──────────────────────────────────────────────────
+    # HR / Talent — UAE/Gulf focus via JSearch, but Adzuna for broader markets
+    ('gb','hr manager','UK'),
+    ('gb','talent acquisition manager','UK'),
+    ('gb','hr business partner','UK'),
+    ('gb','people analytics manager','UK'),
+    ('us','hr manager','USA'),
+    ('us','talent acquisition manager','USA'),
+    ('us','hr director','USA'),
+    ('in','hr manager','India'),
+    ('in','talent acquisition manager','India'),
+    ('in','hr business partner','India'),
+    ('sg','hr manager','Singapore'),
+    ('de','hr manager','Germany'),
+    # Sales / Business Development
+    ('gb','sales manager','UK'),
+    ('gb','business development manager','UK'),
+    ('gb','account manager','UK'),
+    ('us','sales manager','USA'),
+    ('us','business development manager','USA'),
+    ('us','account executive','USA'),
+    ('in','sales manager','India'),
+    ('in','business development manager','India'),
+    ('sg','sales manager','Singapore'),
+    ('de','sales manager','Germany'),
+    ('au','sales manager','Australia'),
+    # CRM / Customer Success
+    ('gb','crm manager','UK'),
+    ('gb','customer success manager','UK'),
+    ('us','crm manager','USA'),
+    ('us','customer success manager','USA'),
+    ('us','salesforce manager','USA'),
+    ('in','crm manager','India'),
+    ('in','customer success manager','India'),
+    ('sg','crm manager','Singapore'),
+    # Retail / Category / E-commerce
+    ('gb','store manager','UK'),
+    ('gb','category manager retail','UK'),
+    ('gb','ecommerce manager','UK'),
+    ('us','store manager','USA'),
+    ('us','category manager','USA'),
+    ('us','ecommerce manager','USA'),
+    ('in','store manager','India'),
+    ('in','category manager','India'),
+    ('in','ecommerce manager','India'),
+    ('au','store manager','Australia'),
+    ('de','category manager','Germany'),
+    # Finance / FP&A / Treasury
+    ('gb','finance manager','UK'),
+    ('gb','financial analyst','UK'),
+    ('gb','fp&a manager','UK'),
+    ('gb','treasury manager','UK'),
+    ('us','finance manager','USA'),
+    ('us','financial planning analyst','USA'),
+    ('us','fp&a manager','USA'),
+    ('in','finance manager','India'),
+    ('in','financial analyst','India'),
+    ('in','fp&a manager','India'),
+    ('ch','finance manager','Switzerland'),
+    ('de','finance manager','Germany'),
+    ('sg','finance manager','Singapore'),
+    # Product Manager
+    ('gb','product manager','UK'),
+    ('us','product manager','USA'),
+    ('us','product director','USA'),
+    ('in','product manager','India'),
+    ('sg','product manager','Singapore'),
+    ('de','product manager','Germany'),
+    # Marketing / Brand
+    ('gb','marketing manager','UK'),
+    ('gb','brand manager','UK'),
+    ('us','marketing manager','USA'),
+    ('us','brand manager','USA'),
+    ('in','marketing manager','India'),
+    ('in','brand manager','India'),
 ]
 # Note: Ireland (ie), Sweden (se) not supported by Adzuna — covered via Apify/Arbeitnow
 
@@ -163,9 +238,23 @@ REED_SEARCHES = [
     ('marketing analytics','London'),
     ('web analytics manager','London'),
     ('data analytics manager','Manchester'),
+    # New categories
+    ('hr manager','London'),
+    ('talent acquisition manager','London'),
+    ('sales manager','London'),
+    ('business development manager','London'),
+    ('crm manager','London'),
+    ('customer success manager','London'),
+    ('finance manager','London'),
+    ('fp&a manager','London'),
+    ('product manager','London'),
+    ('marketing manager','London'),
+    ('store manager','London'),
+    ('category manager','London'),
 ]
 
 JSEARCH_SEARCHES = [
+    # Analytics / BI — Gulf
     ('data analytics manager in Dubai UAE','AE'),
     ('digital marketing analytics manager Dubai','AE'),
     ('business intelligence manager Dubai UAE','AE'),
@@ -176,6 +265,38 @@ JSEARCH_SEARCHES = [
     ('business intelligence manager Qatar','QA'),
     ('analytics manager Kuwait City Kuwait','KW'),
     ('data analytics manager Manama Bahrain','BH'),
+    # HR / Talent — Gulf
+    ('hr manager Dubai UAE','AE'),
+    ('talent acquisition manager Dubai','AE'),
+    ('hr director Riyadh Saudi Arabia','SA'),
+    ('people manager Dubai UAE','AE'),
+    ('hr business partner Dubai','AE'),
+    # Sales / BD — Gulf
+    ('sales manager Dubai UAE','AE'),
+    ('business development manager Dubai UAE','AE'),
+    ('account manager Dubai UAE','AE'),
+    ('sales director Riyadh Saudi Arabia','SA'),
+    ('commercial manager Dubai UAE','AE'),
+    # CRM / Customer Success — Gulf
+    ('crm manager Dubai UAE','AE'),
+    ('customer success manager Dubai UAE','AE'),
+    ('salesforce manager Dubai UAE','AE'),
+    # Retail / Category — Gulf
+    ('store manager Dubai UAE','AE'),
+    ('category manager Dubai UAE','AE'),
+    ('retail manager Dubai UAE','AE'),
+    ('ecommerce manager Dubai UAE','AE'),
+    # Finance — Gulf
+    ('finance manager Dubai UAE','AE'),
+    ('financial analyst Dubai UAE','AE'),
+    ('fp&a manager Dubai UAE','AE'),
+    ('treasury manager Dubai UAE','AE'),
+    ('finance director Riyadh Saudi Arabia','SA'),
+    # Product / Marketing — Gulf
+    ('product manager Dubai UAE','AE'),
+    ('marketing manager Dubai UAE','AE'),
+    ('brand manager Dubai UAE','AE'),
+    ('growth manager Dubai UAE','AE'),
 ]
 JSEARCH_DAILY_FILE = os.path.join(BASE, 'data', 'jsearch_last_run.json')
 
@@ -223,28 +344,69 @@ MY_EXP_YEARS = 10
 
 # ── SPAM FILTER ───────────────────────────────────────────────────────────────
 TITLE_KW = [
+    # Analytics / BI / Data
     'analytic','analytics','data ','data-',' data','intelligence',' bi ',
     'dashboard','reporting','report','insight','kpi','digital marketing',
     'seo','sem','sql','power bi','tableau','looker','google analytics',
     'ga4','gtm','tag manager','marketing analytics','web analytics',
-    'performance marketing','crm','visualization','bigquery','measurement',
+    'performance marketing','visualization','bigquery','measurement',
     'tracking','attribution','conversion rate','cro','mis ','information system',
-    'business analyst','growth analyst','growth manager','media analyst','performance analyst',
+    'business analyst','growth analyst','media analyst','performance analyst',
+    # Operations
     'operations manager','revenue operations','marketing operations',
     'business operations','growth operations','operations analyst','ops manager','ops lead',
+    'operations director','chief operating','head of operations',
+    # Backend / Engineering
     'backend developer','backend engineer','full stack developer','fullstack developer',
     'data engineer','analytics engineer','software developer','python developer',
     'node.js developer','api developer','platform engineer','engineering manager',
+    # HR / Talent / People
+    'hr manager','hr director','hr business partner','hrbp','talent acquisition',
+    'talent management','recruitment manager','recruiter','people manager',
+    'people operations','human resources','workforce planning','learning & development',
+    'l&d manager','compensation','benefits manager','hr analytics','people analytics',
+    'head of hr','chief people','head of talent','hr lead',
+    # CRM / Customer Success
+    'crm manager','crm director','crm analyst','crm lead','crm specialist',
+    'customer success manager','customer success director','salesforce','hubspot',
+    'customer relationship','client success','account manager','client manager',
+    'customer experience manager','cx manager',
+    # Sales / Business Development
+    'sales manager','sales director','head of sales','vp sales','vp of sales',
+    'business development manager','business development director','bdm',
+    'account executive','enterprise sales','sales analytics','sales operations',
+    'commercial manager','commercial director','revenue manager',
+    'regional sales','national sales','country manager',
+    # Retail / E-commerce / Category
+    'store manager','retail manager','retail director','head of retail',
+    'category manager','category director','merchandising manager','merchandiser',
+    'ecommerce manager','e-commerce manager','ecommerce director',
+    'trade marketing','channel manager','omnichannel',
+    'buying manager','buyer ','head of buying',
+    # Finance / FP&A / Treasury
+    'finance manager','finance director','head of finance','chief financial',
+    'financial analyst','financial planning','fp&a','treasury manager',
+    'financial controller','finance controller','corporate finance',
+    'investment analyst','finance analyst','budgeting','forecasting',
+    'financial reporting','management reporting',
+    # Marketing / Brand / Growth
+    'marketing manager','marketing director','head of marketing','cmo',
+    'brand manager','brand director','growth manager','growth marketing',
+    'digital marketing manager','performance marketing manager',
+    'content marketing','email marketing manager',
+    # Product
+    'product manager','product director','head of product','vp product',
+    'product analytics','product operations','product marketing',
 ]
 HARD_BLOCK = [
     'driver','delivery boy','warehouse','nurse','teacher','security guard',
     'cook ','chef','cashier','receptionist','electrician','plumber','mechanic',
-    'telemarketing','domestic','factory worker','labourer','content writer',
-    'copywriter','solicitor','lawyer','legal counsel','construction manager',
+    'telemarketing','domestic','factory worker','labourer',
+    'solicitor','lawyer','legal counsel','construction manager',
     'pre construction','quantity surveyor','customer engineer',
-    'finance business partner','management accounting','market risk controller',
-    'java developer','kotlin developer','cloud engineer','sap ewm','sap bpa',
-    'generative ai engineer','campus','associate (ca)','content creator',
+    'market risk controller','java developer','kotlin developer',
+    'cloud engineer','sap ewm','sap bpa',
+    'generative ai engineer','associate (ca)',
 ]
 SPAM_COMPANIES = ['testhiring','flat fee recruiter','wynwood tech']
 DESC_KW = [
@@ -252,6 +414,10 @@ DESC_KW = [
     'dashboard','kpi','analytics','data analysis','reporting','digital marketing',
     'seo','tracking','attribution','conversion','insight','metric','measurement',
     'operations','backend','data engineer','revenue operations','python','api',
+    # New category desc keywords
+    'recruitment','talent acquisition','hr','human resources','salesforce','hubspot',
+    'sales','business development','retail','store','ecommerce','crm',
+    'finance','financial','treasury','fp&a','product manager','brand',
 ]
 
 def is_spam(title, desc, company=''):
@@ -348,11 +514,48 @@ def fmt_salary(lo, hi, cc):
 
 def infer_category(title):
     t = title.lower()
-    if any(k in t for k in ['operations manager','revenue operations','marketing operations','business operations','ops manager','ops lead']):
+    if any(k in t for k in ['hr manager','hr director','hrbp','hr business partner','talent acquisition',
+                             'recruitment','recruiter','people manager','people operations','human resources',
+                             'workforce','learning & development','l&d','compensation','hr analytics',
+                             'people analytics','chief people','head of hr','head of talent']):
+        return 'HR & Talent'
+    if any(k in t for k in ['sales manager','sales director','head of sales','vp sales','account executive',
+                             'business development','bdm','enterprise sales','regional sales','national sales',
+                             'commercial manager','commercial director','country manager','revenue manager']):
+        return 'Sales & BD'
+    if any(k in t for k in ['store manager','retail manager','retail director','head of retail',
+                             'category manager','merchandising','buying manager','buyer ','omnichannel',
+                             'trade marketing','channel manager']):
+        return 'Retail & E-commerce'
+    if any(k in t for k in ['crm manager','crm director','crm analyst','crm lead','salesforce','hubspot',
+                             'customer success','client success','cx manager','customer experience manager',
+                             'account manager','client manager']):
+        return 'CRM & Customer Success'
+    if any(k in t for k in ['finance manager','finance director','head of finance','chief financial',
+                             'financial analyst','financial planning','fp&a','treasury','financial controller',
+                             'corporate finance','investment analyst','budgeting','forecasting',
+                             'financial reporting','management reporting']):
+        return 'Finance & FP&A'
+    if any(k in t for k in ['product manager','product director','head of product','vp product',
+                             'product analytics','product operations','product marketing']):
+        return 'Product'
+    if any(k in t for k in ['marketing manager','marketing director','head of marketing','cmo',
+                             'brand manager','brand director','growth marketing','content marketing',
+                             'email marketing','performance marketing manager','digital marketing manager']):
+        return 'Marketing'
+    if any(k in t for k in ['ecommerce manager','e-commerce manager','ecommerce director',
+                             'growth manager','growth analyst']):
+        return 'E-commerce & Growth'
+    if any(k in t for k in ['operations manager','revenue operations','marketing operations',
+                             'business operations','ops manager','ops lead','operations director',
+                             'head of operations','chief operating']):
         return 'Operations'
-    if any(k in t for k in ['backend developer','backend engineer','full stack','fullstack','data engineer','analytics engineer','software developer','python developer','node.js','api developer','engineering manager']):
-        return 'Backend'
-    if any(k in t for k in ['marketing','seo','sem','campaign','social media','paid']):
+    if any(k in t for k in ['backend developer','backend engineer','full stack','fullstack',
+                             'data engineer','analytics engineer','software developer','python developer',
+                             'node.js','api developer','engineering manager','platform engineer']):
+        return 'Engineering'
+    if any(k in t for k in ['digital marketing','seo','sem','campaign','paid media',
+                             'performance marketing','social media']):
         return 'Digital Marketing'
     if any(k in t for k in [' bi ',' bi,','business intel','business intelligence']):
         return 'Business Intelligence'
@@ -589,7 +792,8 @@ def fetch_remoteok():
 
 # ── 5. ARBEITNOW (free, no auth — Europe-focused) ─────────────────────────────
 ARBEITNOW_URL  = 'https://www.arbeitnow.com/api/job-board-api'
-ARBEITNOW_TAGS = ['analytics','data','business-intelligence','marketing','operations','backend','python']
+ARBEITNOW_TAGS = ['analytics','data','business-intelligence','marketing','operations','backend','python',
+                  'sales','hr','finance','product','crm','ecommerce','retail']
 
 def norm_arbeitnow(hit):
     title  = (hit.get('title') or '').strip()
