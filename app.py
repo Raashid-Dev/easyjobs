@@ -58,6 +58,11 @@ TITLE_KW = [
     'marketing manager', 'marketing director', 'head of marketing', 'cmo',
     'brand manager', 'brand director', 'growth marketing', 'content marketing',
     'email marketing manager', 'performance marketing manager',
+    # Fresher / Entry-level
+    'junior analyst', 'junior data', 'junior hr', 'junior sales', 'junior finance',
+    'junior marketing', 'junior product', 'graduate analyst', 'graduate trainee',
+    'entry level analyst', 'entry level data', 'entry level hr', 'entry level sales',
+    'fresher analyst', 'data analyst fresher', 'associate analyst', 'trainee analyst',
 ]
 DESC_KW = [
     'google analytics', 'ga4', 'power bi', 'tableau', 'looker', 'bigquery',

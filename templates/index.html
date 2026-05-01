@@ -1006,6 +1006,20 @@
 
     <div class="filter-group">
       <div class="filter-title">
+        Experience Level
+        <span class="clear-btn" onclick="clearFilter('experience')">Clear</span>
+      </div>
+      <div class="filter-chips" id="filter-experience">
+        <div class="chip active" data-val="all"       onclick="toggleChip(this,'experience')">All Levels</div>
+        <div class="chip" data-val="fresher"          onclick="toggleChip(this,'experience')">🌱 Fresher (0-2 yr)</div>
+        <div class="chip" data-val="mid"              onclick="toggleChip(this,'experience')">📈 Mid (2-5 yr)</div>
+        <div class="chip" data-val="senior"           onclick="toggleChip(this,'experience')">⭐ Senior (5+ yr)</div>
+        <div class="chip" data-val="director"         onclick="toggleChip(this,'experience')">🏆 Director (10+ yr)</div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-title">
         Posted
         <span class="clear-btn" onclick="clearFilter('posted')">Clear</span>
       </div>
@@ -1238,6 +1252,7 @@ function applyAllFilters() {
   const category  = getActiveChip('category');
   const workmode  = getActiveChip('workmode');
   const jobtype   = getActiveChip('jobtype');
+  const experience= getActiveChip('experience');
   const posted    = getActiveChip('posted');
   const sortBy    = document.getElementById('sortSelect').value;
   // Sync mobile sort select to match desktop
@@ -1324,6 +1339,19 @@ function applyAllFilters() {
 
   /* ── job type ───────────────────────────────────────── */
   if (jobtype && jobtype !== 'all') jobs = jobs.filter(j => j.job_type === jobtype);
+
+  /* ── experience level ───────────────────────────────── */
+  if (experience && experience !== 'all') {
+    jobs = jobs.filter(j => {
+      const expMin = j.experience_min ?? 3;
+      const expReq = (j.experience_required || '').toLowerCase();
+      if (experience === 'fresher')  return expMin <= 2 || expReq.includes('0-') || expReq.includes('junior') || expReq.includes('fresher') || expReq.includes('graduate') || expReq.includes('entry');
+      if (experience === 'mid')      return expMin >= 2 && expMin <= 4;
+      if (experience === 'senior')   return expMin >= 5 && expMin < 10;
+      if (experience === 'director') return expMin >= 10;
+      return true;
+    });
+  }
 
   /* ── posted ─────────────────────────────────────────── */
   if (posted && posted !== 'all') {
@@ -1854,7 +1882,7 @@ function clearAllFilters() {
 }
 
 function updateFilterBadge() {
-  const active = ['region','location','salaryinr','category','workmode','jobtype','posted']
+  const active = ['region','location','salaryinr','category','workmode','jobtype','experience','posted']
     .filter(g => getActiveChip(g) !== 'all').length;
   const badge = document.getElementById('mfbBadge');
   if (badge) {

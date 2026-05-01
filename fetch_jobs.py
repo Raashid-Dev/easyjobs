@@ -153,8 +153,55 @@ ADZUNA_SEARCHES = [
     ('be','data analytics manager','Belgium'),
     ('be','business intelligence manager','Belgium'),
     ('be','digital analytics manager','Belgium'),
+    # ── FRESHER / ENTRY-LEVEL — all markets ──────────────────────────────
+    ('gb','junior data analyst','UK'),
+    ('gb','graduate analyst','UK'),
+    ('gb','entry level data analyst','UK'),
+    ('gb','junior hr executive','UK'),
+    ('gb','graduate hr','UK'),
+    ('gb','junior sales executive','UK'),
+    ('gb','junior finance analyst','UK'),
+    ('gb','graduate finance','UK'),
+    ('gb','junior product analyst','UK'),
+    ('gb','junior marketing executive','UK'),
+    ('us','junior data analyst','USA'),
+    ('us','entry level data analyst','USA'),
+    ('us','junior business analyst','USA'),
+    ('us','entry level marketing','USA'),
+    ('us','junior finance analyst','USA'),
+    ('us','entry level hr','USA'),
+    ('us','entry level sales','USA'),
+    ('us','junior product manager','USA'),
+    ('in','data analyst fresher','India'),
+    ('in','junior data analyst','India'),
+    ('in','fresher analyst','India'),
+    ('in','junior hr executive','India'),
+    ('in','junior sales executive','India'),
+    ('in','junior finance executive','India'),
+    ('in','junior marketing executive','India'),
+    ('in','junior product manager','India'),
+    ('in','graduate trainee analyst','India'),
+    ('in','entry level analyst','India'),
+    ('sg','junior analyst','Singapore'),
+    ('sg','graduate analyst','Singapore'),
+    ('sg','entry level analyst','Singapore'),
+    ('sg','junior hr','Singapore'),
+    ('sg','junior sales','Singapore'),
+    ('de','junior analyst','Germany'),
+    ('de','junior data analyst','Germany'),
+    ('de','graduate analyst','Germany'),
+    ('au','junior analyst','Australia'),
+    ('au','graduate analyst','Australia'),
+    ('au','junior data analyst','Australia'),
+    ('ca','junior analyst','Canada'),
+    ('ca','junior data analyst','Canada'),
+    ('ca','entry level analyst','Canada'),
+    ('nl','junior analyst','Netherlands'),
+    ('fr','junior analyst','France'),
+    ('ch','junior analyst','Switzerland'),
     # ── NEW CATEGORIES ──────────────────────────────────────────────────
     # HR / Talent — UAE/Gulf focus via JSearch, but Adzuna for broader markets
+    # (fresher variants already added in the FRESHER section above)
     ('gb','hr manager','UK'),
     ('gb','talent acquisition manager','UK'),
     ('gb','hr business partner','UK'),
@@ -297,6 +344,18 @@ JSEARCH_SEARCHES = [
     ('marketing manager Dubai UAE','AE'),
     ('brand manager Dubai UAE','AE'),
     ('growth manager Dubai UAE','AE'),
+    # ── FRESHER / ENTRY-LEVEL — Gulf ────────────────────────────────────────
+    ('junior data analyst Dubai UAE','AE'),
+    ('graduate analyst Dubai UAE','AE'),
+    ('entry level analyst Dubai','AE'),
+    ('junior hr executive Dubai UAE','AE'),
+    ('junior sales executive Dubai UAE','AE'),
+    ('junior finance analyst Dubai UAE','AE'),
+    ('junior marketing executive Dubai UAE','AE'),
+    ('junior product manager Dubai UAE','AE'),
+    ('fresher analyst Riyadh Saudi Arabia','SA'),
+    ('graduate trainee Dubai UAE','AE'),
+    ('associate analyst Dubai UAE','AE'),
 ]
 JSEARCH_DAILY_FILE = os.path.join(BASE, 'data', 'jsearch_last_run.json')
 
@@ -397,6 +456,11 @@ TITLE_KW = [
     # Product
     'product manager','product director','head of product','vp product',
     'product analytics','product operations','product marketing',
+    # Fresher / Entry-level (any category)
+    'junior analyst','junior data','junior hr','junior sales','junior finance',
+    'junior marketing','junior product','graduate analyst','graduate trainee',
+    'entry level analyst','entry level data','entry level hr','entry level sales',
+    'fresher analyst','data analyst fresher','associate analyst','trainee analyst',
 ]
 HARD_BLOCK = [
     'driver','delivery boy','warehouse','nurse','teacher','security guard',
@@ -563,6 +627,25 @@ def infer_category(title):
         return 'Web Analytics'
     return 'Data Analytics'
 
+def infer_experience(title, desc=''):
+    """Return (label, min_years) based on title and description signals."""
+    t = (title + ' ' + (desc or '')[:300]).lower()
+    if any(k in t for k in ['fresher','fresh graduate','0-1 year','0 year',
+                             'no experience required','entry level','entry-level',
+                             'junior','graduate trainee','trainee','intern',
+                             'apprentice','1-2 year','associate analyst']):
+        return '0-2 years', 1
+    if any(k in t for k in ['2-4 year','2-5 year','3-5 year','3-4 year',
+                             'mid level','mid-level','2+ year','3+ year']):
+        return '2-5 years', 3
+    if any(k in t for k in ['10+ year','10-15 year','15+ year','head of',
+                             'chief ','c-level','president','vp ','vice president']):
+        return '10+ years', 10
+    if any(k in t for k in ['5+ year','5-8 year','6+ year','7+ year','8+ year',
+                             'senior','manager','director','lead ']):
+        return '5+ years', 5
+    return '3+ years', 3
+
 def infer_work_mode(title, desc, is_remote=False):
     t = (title + ' ' + (desc or ''))[:500].lower()
     if is_remote or 'remote' in t or 'work from home' in t: return 'WFH'
@@ -586,6 +669,7 @@ def norm_adzuna(hit, cc, city_hint=None):
     if city_hint and (not area or area.lower() in [cname.lower(), cc.lower(), '']):
         area = city_hint
     li_co = co.lower().replace(' ','-').replace('.','').replace(',','')
+    exp_label, exp_min = infer_experience(title, desc)
     return {
         'id':f"az_{hit.get('id','')}",'title':title,'position_name':title,'company':co,
         'company_website':hit.get('redirect_url',''),'company_address':loc,
@@ -593,7 +677,7 @@ def norm_adzuna(hit, cc, city_hint=None):
         'salary_local':sal_loc,'salary_inr_annual':sal_inr,'salary_usd_annual':sal_usd,
         'posted_date':hit.get('created','')[:10],
         'posted_days_ago':days_ago_from_iso(hit.get('created','')),
-        'job_type':'Full-time','experience_required':'5+ years','experience_min':5,
+        'job_type':'Full-time','experience_required':exp_label,'experience_min':exp_min,
         'description':desc,'responsibilities':[],
         'skills_required':[s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have':[],
@@ -628,6 +712,7 @@ def norm_reed(hit):
     desc = strip_html(hit.get('jobDescription',''))
     if is_spam(title, desc, co): return None
     li_co = co.lower().replace(' ','-').replace('.','').replace(',','')
+    exp_label, exp_min = infer_experience(title, desc)
     return {
         'id':f"rd_{hit.get('jobId','')}",'title':title,'position_name':title,'company':co,
         'company_website':hit.get('jobUrl',''),'company_address':loc,
@@ -635,7 +720,7 @@ def norm_reed(hit):
         'salary_local':sal_loc,'salary_inr_annual':sal_inr,'salary_usd_annual':sal_usd,
         'posted_date':(hit.get('date','') or '')[:10],
         'posted_days_ago':days_ago_from_dmy(hit.get('date','')) if hit.get('date') else 0,
-        'job_type':'Full-time','experience_required':'5+ years','experience_min':5,
+        'job_type':'Full-time','experience_required':exp_label,'experience_min':exp_min,
         'description':desc,'responsibilities':[],
         'skills_required':[s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have':[],
@@ -690,6 +775,7 @@ def norm_jsearch(hit):
     cname = COUNTRY_NAME.get(cc) or COUNTRY_NAME.get(cc.lower()) or COUNTRY_NAME.get(cc.upper()) or cc
     if not cname or len(cname) <= 2: cname = 'Unknown'
     li_co = co.lower().replace(' ','-').replace('.','').replace(',','')
+    exp_label, exp_min = infer_experience(title, desc)
     return {
         'id':f"js_{abs(hash(url+title))}",'title':title,'position_name':title,'company':co,
         'company_website':hit.get('employer_website',''),'company_address':f"{city}, {cname}",
@@ -697,7 +783,7 @@ def norm_jsearch(hit):
         'salary_local':sal_loc,'salary_inr_annual':sal_inr,'salary_usd_annual':sal_usd,
         'posted_date':datetime.fromtimestamp(ts).strftime('%Y-%m-%d') if ts else '',
         'posted_days_ago':days_ago_from_ts(ts) if ts else 0,
-        'job_type':'Full-time','experience_required':'5+ years','experience_min':5,
+        'job_type':'Full-time','experience_required':exp_label,'experience_min':exp_min,
         'description':desc[:1000],'responsibilities':hit.get('job_highlights',{}).get('Responsibilities',[])[:6],
         'skills_required':(hit.get('job_required_skills') or [])[:8] or [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have':[],
@@ -754,13 +840,14 @@ def norm_remoteok(hit):
     if not title or is_spam(title, desc, co): return None
     sal_loc, sal_inr, sal_usd = fmt_salary(sal_lo, sal_hi, 'us')
     li_co = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    exp_label, exp_min = infer_experience(title, desc)
     return {
         'id': f"ro_{hit.get('id', abs(hash(url+title)))}", 'title': title, 'position_name': title, 'company': co,
         'company_website': url, 'company_address': 'Remote',
         'location': 'Remote', 'city': 'Remote', 'country': 'USA',
         'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
         'posted_date': '', 'posted_days_ago': days_ago_from_ts(pub_ts),
-        'job_type': 'Full-time', 'experience_required': '3+ years', 'experience_min': 3,
+        'job_type': 'Full-time', 'experience_required': exp_label, 'experience_min': exp_min,
         'description': desc[:1000], 'responsibilities': [],
         'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have': [],
@@ -811,13 +898,14 @@ def norm_arbeitnow(hit):
     sal_loc, sal_inr, sal_usd = fmt_salary(0, 0, cc)
     wm    = infer_work_mode(title, desc, remote)
     li_co = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    exp_label, exp_min = infer_experience(title, desc)
     return {
         'id': f"an_{abs(hash(url+title+co))}", 'title': title, 'position_name': title, 'company': co,
         'company_website': url, 'company_address': loc,
         'location': loc, 'city': city, 'country': cname,
         'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
         'posted_date': '', 'posted_days_ago': days_ago_from_ts(pub_ts),
-        'job_type': 'Full-time', 'experience_required': '3+ years', 'experience_min': 3,
+        'job_type': 'Full-time', 'experience_required': exp_label, 'experience_min': exp_min,
         'description': desc[:1000], 'responsibilities': [],
         'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have': [],
@@ -968,13 +1056,14 @@ def norm_linkedin(hit, fallback_cc='AE'):
 
     wm    = infer_work_mode(title, desc, 'remote' in wm_raw.lower())
     li_co = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    exp_label, exp_min = infer_experience(title, desc)
     return {
         'id': f"li_{abs(hash(url+title+co))}", 'title': title, 'position_name': title, 'company': co,
         'company_website': co_url or url, 'company_address': loc,
         'location': loc, 'city': city, 'country': cname,
         'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
         'posted_date': '', 'posted_days_ago': pda,
-        'job_type': 'Full-time', 'experience_required': '5+ years', 'experience_min': 5,
+        'job_type': 'Full-time', 'experience_required': exp_label, 'experience_min': exp_min,
         'description': desc[:1000], 'responsibilities': [],
         'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have': [],
@@ -1036,7 +1125,7 @@ def norm_google_jobs(hit, fallback_cc='us'):
         'location': loc, 'city': city, 'country': cname,
         'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
         'posted_date': '', 'posted_days_ago': pda,
-        'job_type': 'Full-time', 'experience_required': '5+ years', 'experience_min': 5,
+        'job_type': 'Full-time', 'experience_required': exp_label, 'experience_min': exp_min,
         'description': desc[:1000], 'responsibilities': [],
         'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have': [],
