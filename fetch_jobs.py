@@ -734,17 +734,21 @@ def norm_linkedin(hit, fallback_cc='AE'):
     pub     = (hit.get('postedDate') or '')
     sal_raw = (hit.get('salary') or '')
 
-    # Build a reliable apply URL: prefer direct job link, else LinkedIn job search
-    if job_url and ('linkedin.com/jobs' in job_url or '/jobs/view/' in job_url):
+    # Build a reliable apply URL: prefer direct job link, else Google Jobs search
+    if job_url and ('linkedin.com/jobs/view' in job_url or
+                    ('linkedin.com/jobs' in job_url and 'search' not in job_url)):
         url = job_url
-    elif job_url and job_url.startswith('http') and not any(
-            k in job_url for k in ['/careers', '/jobs', '/work-with-us']):
-        url = job_url   # some other specific URL
+    elif job_url and job_url.startswith('http') and not re.search(
+            r'/(careers|jobs|work-with-us|join-us|vacancies)/?$', job_url, re.I) \
+            and len(job_url.rstrip('/').split('/')) > 3:
+        url = job_url   # specific URL (has a path beyond just the domain)
     else:
-        # Fall back to LinkedIn job search for this title + company
-        q   = urllib.parse.quote_plus(f'{title} {co}')
-        loc_q = urllib.parse.quote_plus(loc.split(',')[0].strip()) if loc else ''
-        url = f'https://www.linkedin.com/jobs/search/?keywords={q}' + (f'&location={loc_q}' if loc_q else '')
+        # Fall back to Google Jobs search — returns real current openings from all boards
+        clean_title = re.sub(r'[–—&]', ' ', title)
+        clean_title = re.sub(r'\s{2,}', ' ', clean_title).strip()
+        city_hint   = loc.split(',')[0].strip() if loc else ''
+        q = urllib.parse.quote_plus(f'{clean_title} {co} {city_hint}'.strip())
+        url = f'https://www.google.com/search?q={q}&ibp=htl;jobs'
 
     if is_spam(title, desc, co): return None
 
