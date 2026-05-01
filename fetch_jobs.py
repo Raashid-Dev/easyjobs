@@ -2,15 +2,17 @@
 fetch_jobs.py — EasyJobs multi-source job fetcher
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Sources:
-  1. Adzuna  — USA, Switzerland, Germany, UK, India (Mumbai/Delhi/Bangalore),
-               Singapore, Australia, Canada, France  (free, unlimited)
+  1. Adzuna     — USA, Switzerland, Germany, UK, India, Singapore, AU, CA, FR
   2. Reed.co.uk — London / UK (free, 50 req/day)
   3. JSearch    — LinkedIn + Indeed globally incl. Dubai/Gulf
                   (free 200 req/month, runs once per day)
-  4. Curated    — sample_jobs.json (Gulf hand-picked)
+  4. RemoteOK   — 100% free, no auth, remote analytics/ops/backend roles
+  5. Arbeitnow  — 100% free, no auth, Europe-focused tech roles
+  6. Apify      — LinkedIn Jobs + Google Jobs (requires APIFY_TOKEN env var)
+  7. Curated    — sample_jobs.json (Gulf hand-picked)
 """
 
-import os, json, time, base64, urllib.request, urllib.parse
+import os, re, json, time, base64, urllib.request, urllib.parse
 from datetime import datetime, timezone, date
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -20,6 +22,7 @@ ADZUNA_APP_ID  = os.getenv('ADZUNA_APP_ID',  '87bbd506')
 ADZUNA_APP_KEY = os.getenv('ADZUNA_APP_KEY', 'fd79dfa64839c87f9bacae9dc3fde106')
 REED_API_KEY   = os.getenv('REED_API_KEY',   '565ae00f-9e91-4e97-98a9-1bfa100d0ae1')
 JSEARCH_KEY    = os.getenv('JSEARCH_KEY',    '4f20b35572msh47c8161a9c003d7p173df1jsn1bb4dc2fe02d')
+APIFY_TOKEN    = os.getenv('APIFY_TOKEN',    '')
 
 # ── SEARCH PLANS ──────────────────────────────────────────────────────────────
 ADZUNA_SEARCHES = [
@@ -146,6 +149,30 @@ JSEARCH_SEARCHES = [
     ('digital analytics lead Dubai UAE','AE'),
 ]
 JSEARCH_DAILY_FILE = os.path.join(BASE, 'data', 'jsearch_last_run.json')
+
+# Apify search plans
+APIFY_LI_SEARCHES = [
+    # (keywords, location, fallback_country_code)
+    ('data analytics manager',        'Dubai',     'AE'),
+    ('business intelligence manager', 'Dubai',     'AE'),
+    ('digital analytics manager',     'Dubai',     'AE'),
+    ('marketing analytics manager',   'Dubai',     'AE'),
+    ('analytics manager',             'Riyadh',    'SA'),
+    ('data analytics manager',        'Singapore', 'sg'),
+    ('operations manager analytics',  'Dubai',     'AE'),
+    ('data analytics director',       'London',    'gb'),
+    ('marketing analytics manager',   'New York',  'us'),
+]
+
+APIFY_GJ_SEARCHES = [
+    # (keywords, location, fallback_country_code)
+    ('data analytics manager',        'Dubai UAE',  'AE'),
+    ('business intelligence manager', 'Dubai',      'AE'),
+    ('analytics manager',             'Singapore',  'sg'),
+    ('data analytics manager',        'India',      'in'),
+    ('digital analytics director',    'Germany',    'de'),
+    ('analytics manager',             'Canada',     'ca'),
+]
 
 # ── PROFILE ───────────────────────────────────────────────────────────────────
 MY_SKILLS = [
@@ -430,6 +457,310 @@ def fetch_jsearch(query, cc):
         else: print(f"    ✗ JSearch '{query}': {e}")
         return []
 
+# ── 4. REMOTEOK (free, no auth) ───────────────────────────────────────────────
+REMOTEOK_URL = 'https://remoteok.com/api'
+REMOTEOK_TAGS = [
+    'analytics','business-intelligence','data','marketing','operations',
+    'growth','seo','crm','reporting','backend','python','sql',
+]
+
+def norm_remoteok(hit):
+    title   = (hit.get('position') or '').strip()
+    co      = (hit.get('company') or 'Unknown').strip()
+    desc    = (hit.get('description') or '').strip()
+    url     = (hit.get('url') or '').strip()
+    sal_lo  = int(hit.get('salary_min') or 0)
+    sal_hi  = int(hit.get('salary_max') or 0)
+    pub_ts  = hit.get('epoch') or 0
+
+    if not title or is_spam(title, desc, co): return None
+    sal_loc, sal_inr, sal_usd = fmt_salary(sal_lo, sal_hi, 'us')
+    li_co = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    return {
+        'id': f"ro_{hit.get('id', abs(hash(url+title)))}", 'title': title, 'position_name': title, 'company': co,
+        'company_website': url, 'company_address': 'Remote',
+        'location': 'Remote', 'city': 'Remote', 'country': 'USA',
+        'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
+        'posted_date': '', 'posted_days_ago': days_ago_from_ts(pub_ts),
+        'job_type': 'Full-time', 'experience_required': '3+ years', 'experience_min': 3,
+        'description': desc[:1000], 'responsibilities': [],
+        'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
+        'nice_to_have': [],
+        'hr_contact': {'name': f'{co} Hiring', 'title': 'Talent Acquisition', 'email': '',
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': ''},
+        'is_mnc': False, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
+        'industry': 'Analytics', 'category': infer_category(title),
+        'work_mode': 'WFH', 'job_stability': 3.8,
+        'glassdoor_rating': 3.8, 'glassdoor_reviews': 0,
+        'apply_url': url, 'source': 'RemoteOK', 'tags': ['Remote', 'USA'],
+        'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
+        'fit_score': calc_fit(desc),
+    }
+
+def fetch_remoteok():
+    """Fetch all jobs from RemoteOK (free API, no key needed) and keep relevant ones."""
+    print("  Fetching RemoteOK …", end='', flush=True)
+    try:
+        req = urllib.request.Request(REMOTEOK_URL, headers={'User-Agent': 'EasyJobs/1.0'})
+        r   = urllib.request.urlopen(req, timeout=20)
+        raw = json.loads(r.read())
+        # first element is a meta-info dict, skip it
+        hits = [h for h in raw if isinstance(h, dict) and h.get('position')]
+        jobs = [j for h in hits if (j := norm_remoteok(h))]
+        print(f" {len(jobs)} jobs (from {len(hits)} listings)")
+        return jobs
+    except Exception as e:
+        print(f"\n    ✗ RemoteOK: {e}"); return []
+
+# ── 5. ARBEITNOW (free, no auth — Europe-focused) ─────────────────────────────
+ARBEITNOW_URL  = 'https://www.arbeitnow.com/api/job-board-api'
+ARBEITNOW_TAGS = ['analytics','data','business-intelligence','marketing','operations','backend','python']
+
+def norm_arbeitnow(hit):
+    title  = (hit.get('title') or '').strip()
+    co     = (hit.get('company_name') or 'Unknown').strip()
+    desc   = (hit.get('description') or '').strip()
+    url    = (hit.get('url') or '').strip()
+    loc    = (hit.get('location') or 'Europe').strip()
+    remote = bool(hit.get('remote'))
+    pub_ts = hit.get('created_at') or 0
+
+    if not title or is_spam(title, desc, co): return None
+    cc    = _guess_country(loc) or 'de'
+    cname = COUNTRY_NAME.get(cc, cc.upper())
+    city  = loc.split(',')[0].strip() if loc else cname
+    sal_loc, sal_inr, sal_usd = fmt_salary(0, 0, cc)
+    wm    = infer_work_mode(title, desc, remote)
+    li_co = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    return {
+        'id': f"an_{abs(hash(url+title+co))}", 'title': title, 'position_name': title, 'company': co,
+        'company_website': url, 'company_address': loc,
+        'location': loc, 'city': city, 'country': cname,
+        'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
+        'posted_date': '', 'posted_days_ago': days_ago_from_ts(pub_ts),
+        'job_type': 'Full-time', 'experience_required': '3+ years', 'experience_min': 3,
+        'description': desc[:1000], 'responsibilities': [],
+        'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
+        'nice_to_have': [],
+        'hr_contact': {'name': f'{co} Hiring', 'title': 'Talent Acquisition', 'email': '',
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': ''},
+        'is_mnc': False, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
+        'industry': 'Analytics', 'category': infer_category(title),
+        'work_mode': wm, 'job_stability': 3.8,
+        'glassdoor_rating': 3.8, 'glassdoor_reviews': 0,
+        'apply_url': url, 'source': 'Arbeitnow', 'tags': [cname, 'Europe'],
+        'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
+        'fit_score': calc_fit(desc),
+    }
+
+def fetch_arbeitnow():
+    """Fetch jobs from Arbeitnow (free API, no key needed) — Europe tech roles."""
+    jobs_all = []
+    for tag in ARBEITNOW_TAGS:
+        print(f"  [{tag}] …", end='', flush=True)
+        try:
+            params = urllib.parse.urlencode({'tags': tag})
+            req    = urllib.request.Request(f"{ARBEITNOW_URL}?{params}",
+                                            headers={'User-Agent': 'EasyJobs/1.0'})
+            r      = urllib.request.urlopen(req, timeout=15)
+            hits   = json.loads(r.read()).get('data', [])
+            normed = [j for h in hits if (j := norm_arbeitnow(h))]
+            jobs_all.extend(normed)
+            print(f" {len(normed)}")
+        except Exception as e:
+            print(f"\n    ✗ Arbeitnow [{tag}]: {e}")
+        time.sleep(0.3)
+    return jobs_all
+
+# ── 6. APIFY (LinkedIn + Google Jobs) ────────────────────────────────────────
+
+def run_apify_actor(actor_id, input_data, timeout=120):
+    """Run an Apify actor synchronously and return dataset items as a list.
+    actor_id must use ~ separator: 'username~actor-name'
+    """
+    if not APIFY_TOKEN:
+        return []
+    # Apify REST API requires ~ not / in actor IDs
+    safe_id = actor_id.replace('/', '~')
+    url = (f"https://api.apify.com/v2/acts/{safe_id}/run-sync-get-dataset-items"
+           f"?token={APIFY_TOKEN}&timeout={timeout}&memory=256")
+    body = json.dumps(input_data).encode('utf-8')
+    try:
+        req = urllib.request.Request(url, data=body,
+              headers={'Content-Type': 'application/json'}, method='POST')
+        r = urllib.request.urlopen(req, timeout=timeout + 30)
+        return json.loads(r.read())
+    except Exception as e:
+        print(f"    ✗ Apify [{actor_id}]: {e}")
+        return []
+
+def _parse_days_ago(s):
+    """Parse '3 days ago', '1 week ago', '2 months ago' → int days."""
+    if not s: return 0
+    s = s.lower().strip()
+    try:
+        n = int(s.split()[0])
+        if 'month' in s: return n * 30
+        if 'week'  in s: return n * 7
+        if 'hour'  in s: return 0
+        return n  # days
+    except: return 0
+
+def _guess_country(location_str):
+    """Return 2-letter country code from a free-text location string."""
+    loc = (location_str or '').lower()
+    if 'dubai' in loc or 'abu dhabi' in loc or ' uae' in loc: return 'AE'
+    if 'saudi' in loc or 'riyadh' in loc or 'jeddah' in loc: return 'SA'
+    if 'bahrain' in loc: return 'BH'
+    if 'singapore' in loc: return 'sg'
+    if 'london' in loc or ' uk' in loc or 'united kingdom' in loc: return 'gb'
+    if 'germany' in loc or 'berlin' in loc or 'munich' in loc: return 'de'
+    if 'switzerland' in loc or 'zurich' in loc or 'geneva' in loc: return 'ch'
+    if 'india' in loc or 'mumbai' in loc or 'bangalore' in loc or 'bengaluru' in loc or 'delhi' in loc: return 'in'
+    if 'canada' in loc or 'toronto' in loc or 'vancouver' in loc: return 'ca'
+    if 'australia' in loc or 'sydney' in loc or 'melbourne' in loc: return 'au'
+    if 'france' in loc or 'paris' in loc: return 'fr'
+    if 'new york' in loc or 'chicago' in loc or 'san francisco' in loc or 'seattle' in loc: return 'us'
+    return ''
+
+def _extract_salary(sal_raw, cc):
+    """Parse a free-text salary string into (sal_loc, sal_inr, sal_usd)."""
+    if not sal_raw or not sal_raw.strip():
+        return 'Not disclosed', 'Not disclosed', 0
+    nums = [int(x.replace(',', '')) for x in re.findall(r'\d[\d,]+', sal_raw)]
+    if not nums:
+        return sal_raw, 'Not disclosed', 0
+    lo, hi = (nums[0], nums[-1]) if len(nums) > 1 else (nums[0], nums[0])
+    return fmt_salary(lo, hi, cc)
+
+def norm_linkedin(hit, fallback_cc='AE'):
+    """Normalise valig/linkedin-jobs-scraper output to standard job dict.
+    Output fields: id, url, title, location, companyName, companyUrl,
+    salary, postedDate, workType, contractType, experienceLevel,
+    description, descriptionHtml, sector, applicationsCount
+    """
+    title  = (hit.get('title') or 'Analytics Role').strip()
+    co     = (hit.get('companyName') or 'Unknown').strip()
+    loc    = (hit.get('location') or '').strip()
+    desc   = (hit.get('description') or hit.get('descriptionHtml') or '').strip()
+    url    = (hit.get('url') or hit.get('companyUrl') or '').strip()
+    wm_raw = (hit.get('workType') or '').strip()          # "Remote" / "On-site" / "Hybrid"
+    pub    = (hit.get('postedDate') or '')
+    sal_raw= (hit.get('salary') or '')
+
+    if is_spam(title, desc, co): return None
+
+    cc    = _guess_country(loc) or fallback_cc
+    cname = COUNTRY_NAME.get(cc, cc.upper())
+    city  = loc.split(',')[0].strip() if loc else cname
+
+    sal_loc, sal_inr, sal_usd = _extract_salary(sal_raw, cc)
+
+    pda = 0
+    if pub:
+        pda = _parse_days_ago(pub) if 'ago' in pub.lower() else days_ago_from_iso(pub)
+
+    wm    = infer_work_mode(title, desc, 'remote' in wm_raw.lower())
+    li_co = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    return {
+        'id': f"li_{abs(hash(url+title+co))}", 'title': title, 'position_name': title, 'company': co,
+        'company_website': url, 'company_address': loc,
+        'location': loc, 'city': city, 'country': cname,
+        'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
+        'posted_date': '', 'posted_days_ago': pda,
+        'job_type': 'Full-time', 'experience_required': '5+ years', 'experience_min': 5,
+        'description': desc[:1000], 'responsibilities': [],
+        'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
+        'nice_to_have': [],
+        'hr_contact': {'name': f'{co} Recruiter', 'title': 'Talent Acquisition', 'email': '',
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': ''},
+        'is_mnc': True, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
+        'industry': 'Analytics', 'category': infer_category(title),
+        'work_mode': wm, 'job_stability': 4.2,
+        'glassdoor_rating': 4.2, 'glassdoor_reviews': 0,
+        'apply_url': url, 'source': 'LinkedIn (Apify)', 'tags': [cname, 'LinkedIn'],
+        'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
+        'fit_score': calc_fit(desc),
+    }
+
+def fetch_apify_linkedin(queries_cc):
+    """Fetch jobs via valig/linkedin-jobs-scraper Apify actor."""
+    jobs = []
+    for keywords, location, cc in queries_cc:
+        print(f"    {keywords} / {location} …", end='', flush=True)
+        items = run_apify_actor('valig/linkedin-jobs-scraper', {
+            'keywords':   keywords,
+            'location':   location,
+            'limit':      25,
+            'datePosted': 'r2592000',   # last 30 days (LinkedIn format)
+        }, timeout=90)
+        normed = [j for h in items if (j := norm_linkedin(h, cc))]
+        jobs.extend(normed)
+        print(f" {len(normed)} jobs")
+        time.sleep(1.0)
+    return jobs
+
+def norm_google_jobs(hit, fallback_cc='us'):
+    """Normalise orgupdate/google-jobs-scraper output to standard job dict.
+    Actual output fields: job_title, company_name, location, posted_via,
+    salary, date, URL, description
+    """
+    title   = (hit.get('job_title') or hit.get('title') or 'Analytics Role').strip()
+    co      = (hit.get('company_name') or hit.get('companyName') or 'Unknown').strip()
+    loc     = (hit.get('location') or '').strip()
+    desc    = (hit.get('description') or '').strip()
+    pub     = hit.get('date') or ''
+    sal_raw = hit.get('salary') or ''
+    wfh     = 'remote' in loc.lower() or 'remote' in desc[:200].lower()
+    url     = hit.get('URL') or hit.get('url') or ''
+
+    if is_spam(title, desc, co): return None
+
+    cc    = _guess_country(loc) or fallback_cc
+    cname = COUNTRY_NAME.get(cc, cc.upper())
+    city  = loc.split(',')[0].strip() if loc else cname
+
+    sal_loc, sal_inr, sal_usd = _extract_salary(sal_raw, cc)
+    pda  = _parse_days_ago(pub) if pub else 0
+    wm   = infer_work_mode(title, desc, wfh)
+    li_co = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    return {
+        'id': f"gj_{abs(hash(url+title+co))}", 'title': title, 'position_name': title, 'company': co,
+        'company_website': url, 'company_address': loc,
+        'location': loc, 'city': city, 'country': cname,
+        'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
+        'posted_date': '', 'posted_days_ago': pda,
+        'job_type': 'Full-time', 'experience_required': '5+ years', 'experience_min': 5,
+        'description': desc[:1000], 'responsibilities': [],
+        'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
+        'nice_to_have': [],
+        'hr_contact': {'name': f'{co} Recruiter', 'title': 'Talent Acquisition', 'email': '',
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': ''},
+        'is_mnc': True, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
+        'industry': 'Analytics', 'category': infer_category(title),
+        'work_mode': wm, 'job_stability': 4.0,
+        'glassdoor_rating': 4.0, 'glassdoor_reviews': 0,
+        'apply_url': url, 'source': 'Google Jobs (Apify)', 'tags': [cname, 'Google Jobs'],
+        'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
+        'fit_score': calc_fit(desc),
+    }
+
+def fetch_apify_google_jobs(queries_cc):
+    """Fetch jobs via orgupdate/google-jobs-scraper Apify actor."""
+    jobs = []
+    for keywords, location, cc in queries_cc:
+        query = f"{keywords} {location}"
+        print(f"    {query} …", end='', flush=True)
+        items = run_apify_actor('orgupdate/google-jobs-scraper', {
+            'query':    query,
+            'maxItems': 20,
+        }, timeout=90)
+        normed = [j for h in items if (j := norm_google_jobs(h, cc))]
+        jobs.extend(normed)
+        print(f" {len(normed)} jobs")
+        time.sleep(1.0)
+    return jobs
+
 # ── DEDUP ─────────────────────────────────────────────────────────────────────
 def dedup(jobs):
     seen = {}
@@ -474,6 +805,21 @@ def fetch_all_jobs():
             add(results); js_total += len(results); print(f" {len(results)} jobs"); time.sleep(1.0)
         if js_total > 0: mark_jsearch_ran(); print(f"  JSearch total: {js_total} | marked as ran today")
 
+    print("\n── RemoteOK (free / remote) ─────────────────────────────────────")
+    add(fetch_remoteok())
+
+    print("\n── Arbeitnow (free / Europe) ────────────────────────────────────")
+    add(fetch_arbeitnow())
+
+    if APIFY_TOKEN:
+        print("\n── Apify – LinkedIn ─────────────────────────────────────────────")
+        add(fetch_apify_linkedin(APIFY_LI_SEARCHES))
+
+        print("\n── Apify – Google Jobs ──────────────────────────────────────────")
+        add(fetch_apify_google_jobs(APIFY_GJ_SEARCHES))
+    else:
+        print("\n── Apify skipped (APIFY_TOKEN not set) ──────────────────────────")
+
     print("\n── Curated sample ───────────────────────────────────────────────")
     sample_path = os.path.join(BASE, 'data', 'sample_jobs.json')
     added = 0
@@ -512,5 +858,7 @@ if __name__ == '__main__':
     with open(out, 'w') as f: json.dump(jobs, f, indent=2)
     ts_path = os.path.join(BASE, 'data', 'last_updated.json')
     with open(ts_path, 'w') as f:
-        json.dump({'timestamp':datetime.now(timezone.utc).isoformat(),'count':len(jobs),'source':'Adzuna + Reed + JSearch + Curated'}, f)
+        apify_src = ' + Apify (LI+GJ)' if APIFY_TOKEN else ''
+        json.dump({'timestamp':datetime.now(timezone.utc).isoformat(),'count':len(jobs),
+                   'source':f'Adzuna + Reed + JSearch + RemoteOK + Arbeitnow{apify_src} + Curated'}, f)
     print(f"\n  Saved → {out}")
