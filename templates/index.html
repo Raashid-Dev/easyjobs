@@ -627,12 +627,13 @@
       font-size: 10px; font-weight: 700;
     }
     .mfb-sort {
-      flex: 1; min-width: 0;
-      background: var(--card); color: var(--text);
-      border: 1px solid var(--border2); border-radius: 20px;
+      flex: 0 0 auto;
+      background: rgba(20,184,166,.1); color: var(--teal);
+      border: 1px solid rgba(20,184,166,.35); border-radius: 8px;
       padding: 7px 10px; font-size: 12px; outline: none; cursor: pointer;
+      min-width: 90px; max-width: 130px; font-weight: 600;
     }
-    .mfb-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .mfb-count { font-size: 12px; color: var(--muted); white-space: nowrap; flex: 1; text-align: right; }
 
     /* ── Sidebar backdrop ─────────────────────────── */
     .sidebar-backdrop {
@@ -658,33 +659,46 @@
     ════════════════════════════════════════════════ */
     @media (max-width: 768px) {
 
-      /* ── Viewport fix ─────────────────────────── */
-      html, body { overflow-x: hidden; }
+      /* ── Scroll fix: let the page scroll naturally ── */
+      html { height: auto; }
+      body { height: auto; overflow-y: auto; overflow-x: hidden; }
 
-      /* ── Header ──────────────────────────────── */
-      header { padding: 0 12px; height: 52px; gap: 8px; flex-wrap: nowrap; }
+      /* ── Header: sticky, wraps search to own row ─── */
+      header {
+        position: sticky; top: 0; z-index: 300;
+        flex-wrap: wrap; height: auto;
+        padding: 8px 12px; gap: 6px;
+      }
+      .logo { flex: 1; }
       .logo .easy, .logo .jobs { font-size: 17px; }
       .logo-dot { display: none; }
       .logo-icon { width: 28px; height: 28px; }
+      .header-right { margin-left: 0; }
       .last-fed-badge { display: none; }
       .badge-live { font-size: 10px; padding: 2px 7px; }
       #refreshBtn span, #refreshBtn .fa-rotate + * { display: none; }
       #refreshBtn { padding: 7px 10px; min-width: 0; }
-      #searchInput { font-size: 13px; height: 34px; }
+      /* Search bar on its own full-width row */
+      .search-wrap {
+        order: 3;
+        flex: 0 0 100%;
+        max-width: none;
+      }
+      #searchInput { font-size: 13px; height: 36px; }
 
-      /* ── Stats bar ───────────────────────────── */
-      .stat-bar { height: 36px; padding: 0 6px; }
+      /* ── Stats bar ─────────────────────────────── */
+      .stat-bar { height: 36px; padding: 0 6px; flex-shrink: 0; }
       .stat-item { padding: 0 9px; }
       .stat-num { font-size: 13px; }
       .stat-label { font-size: 8px; letter-spacing: 0; }
       .stat-sort { display: none; }
       .source-badge { display: none; }
 
-      /* ── Show mobile filter bar ───────────────── */
+      /* ── Show mobile filter bar ─────────────────── */
       .mobile-filter-bar { display: flex; }
 
-      /* ── Body: single column ─────────────────── */
-      .app-body { overflow: visible; }
+      /* ── App body: block flow so page scrolls ──── */
+      .app-body { display: block; overflow: visible; height: auto; flex: none; }
 
       /* ── Sidebar → bottom sheet ──────────────── */
       aside {
@@ -714,8 +728,8 @@
       /* ── Drawer apply button ─────────────────── */
       .drawer-apply-btn { display: flex !important; }
 
-      /* ── Jobs panel: full width ──────────────── */
-      .jobs-panel { padding: 8px; }
+      /* ── Jobs panel: full-width block flow ──────── */
+      .jobs-panel { overflow: visible; height: auto; min-height: 50vh; padding: 8px; }
       .jobs-panel > .job-card { margin-bottom: 8px; }
       .jobs-header { padding: 0 4px 6px; }
 
@@ -846,10 +860,10 @@
   </button>
   <select class="mfb-sort" id="mobileSortSelect"
     onchange="document.getElementById('sortSelect').value=this.value; applyAllFilters()">
-    <option value="fit">Best Fit</option>
-    <option value="salary">💰 Salary</option>
-    <option value="date">🕐 Recent</option>
-    <option value="stability">🏢 Stability</option>
+    <option value="fit">⇅ Best Fit</option>
+    <option value="salary">⇅ Salary ↓</option>
+    <option value="date">⇅ Recent</option>
+    <option value="stability">⇅ Stability</option>
   </select>
   <span class="mfb-count" id="mobileCount">Loading…</span>
 </div>
@@ -1400,6 +1414,7 @@ function buildDetail(j) {
   const fitColor = j.fit_score >= 85 ? '#14b8a6' : j.fit_score >= 70 ? '#f59e0b' : '#ef4444';
   const stabW = Math.round((j.job_stability||3)/5*100);
   const stars = '★'.repeat(Math.round(j.glassdoor_rating||4)) + '☆'.repeat(5 - Math.round(j.glassdoor_rating||4));
+  const gdUrl = 'https://www.glassdoor.com/Search/results.htm?keyword=' + encodeURIComponent(j.company || '');
   const isSaved = saved.includes(j.id);
   const daysLabel = j.posted_days_ago === 0 ? 'Posted today' :
                     j.posted_days_ago === 1 ? 'Posted yesterday' :
@@ -1490,11 +1505,11 @@ function buildDetail(j) {
           ${j.company_website ? 'Visit Site ↗' : 'N/A'}</a></span></div>
       <div class="company-stat"><span>Address</span><span style="text-align:right;max-width:200px;">${j.company_address}</span></div>
       <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;">
-      <div class="star-row">
+      <a href="${gdUrl}" target="_blank" rel="noopener" class="star-row" style="text-decoration:none;cursor:pointer;" title="View on Glassdoor">
         <span class="stars">${stars}</span>
         <span class="stars-num">${j.glassdoor_rating}</span>
-        <span class="reviews">(${j.glassdoor_reviews.toLocaleString()} Glassdoor reviews)</span>
-      </div>
+        <span class="reviews" style="color:var(--teal);">(${j.glassdoor_reviews.toLocaleString()} reviews ↗)</span>
+      </a>
       <div style="font-size:11px;color:var(--muted2);margin-top:4px;">Job Stability</div>
       <div class="stability-bar">
         <div class="stability-fill" style="width:${stabW}%"></div>
@@ -1512,8 +1527,10 @@ function buildDetail(j) {
       ${j.hr_contact.email ? `
       <div class="hr-contact-row"><i class="fa fa-envelope"></i>
         <a href="mailto:${j.hr_contact.email}">${j.hr_contact.email}</a></div>` : ''}
-      ${j.hr_contact.phone ? `
-      <div class="hr-contact-row"><i class="fa fa-phone"></i>${j.hr_contact.phone}</div>` : ''}
+      ${isValidPhone(j.hr_contact.phone) ? `
+      <div class="hr-contact-row"><i class="fa fa-phone"></i>
+        <a href="tel:${(j.hr_contact.phone||'').replace(/\s/g,'')}" style="color:var(--muted);text-decoration:none;">${j.hr_contact.phone}</a>
+      </div>` : ''}
       ${j.hr_contact.linkedin ? `
       <div class="hr-contact-row"><i class="fa-brands fa-linkedin"></i>
         <a href="https://${j.hr_contact.linkedin}" target="_blank">${j.hr_contact.linkedin}</a></div>` : ''}
@@ -1545,6 +1562,12 @@ function fitRow(label, pct) {
     <div class="fit-row-bar"><div class="fit-row-fill" style="width:${pct}%;background:${col}"></div></div>
     <div class="fit-row-pct">${pct}%</div>
   </div>`;
+}
+
+function isValidPhone(phone) {
+  if (!phone || typeof phone !== 'string') return false;
+  const p = phone.trim();
+  return p.length >= 7 && /^[\+\d\s\-\(\)\.]{7,25}$/.test(p);
 }
 
 /* ═══════════════════════════════════════════════════
