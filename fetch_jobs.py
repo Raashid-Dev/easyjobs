@@ -724,14 +724,27 @@ def norm_linkedin(hit, fallback_cc='AE'):
     salary, postedDate, workType, contractType, experienceLevel,
     description, descriptionHtml, sector, applicationsCount
     """
-    title  = (hit.get('title') or 'Analytics Role').strip()
-    co     = (hit.get('companyName') or 'Unknown').strip()
-    loc    = (hit.get('location') or '').strip()
-    desc   = (hit.get('description') or hit.get('descriptionHtml') or '').strip()
-    url    = (hit.get('url') or hit.get('companyUrl') or '').strip()
-    wm_raw = (hit.get('workType') or '').strip()          # "Remote" / "On-site" / "Hybrid"
-    pub    = (hit.get('postedDate') or '')
-    sal_raw= (hit.get('salary') or '')
+    title   = (hit.get('title') or 'Analytics Role').strip()
+    co      = (hit.get('companyName') or 'Unknown').strip()
+    loc     = (hit.get('location') or '').strip()
+    desc    = strip_html((hit.get('description') or hit.get('descriptionHtml') or '').strip())
+    job_url = (hit.get('url') or '').strip()          # direct LinkedIn job posting URL
+    co_url  = (hit.get('companyUrl') or '').strip()   # company LinkedIn page
+    wm_raw  = (hit.get('workType') or '').strip()     # "Remote" / "On-site" / "Hybrid"
+    pub     = (hit.get('postedDate') or '')
+    sal_raw = (hit.get('salary') or '')
+
+    # Build a reliable apply URL: prefer direct job link, else LinkedIn job search
+    if job_url and ('linkedin.com/jobs' in job_url or '/jobs/view/' in job_url):
+        url = job_url
+    elif job_url and job_url.startswith('http') and not any(
+            k in job_url for k in ['/careers', '/jobs', '/work-with-us']):
+        url = job_url   # some other specific URL
+    else:
+        # Fall back to LinkedIn job search for this title + company
+        q   = urllib.parse.quote_plus(f'{title} {co}')
+        loc_q = urllib.parse.quote_plus(loc.split(',')[0].strip()) if loc else ''
+        url = f'https://www.linkedin.com/jobs/search/?keywords={q}' + (f'&location={loc_q}' if loc_q else '')
 
     if is_spam(title, desc, co): return None
 
@@ -749,7 +762,7 @@ def norm_linkedin(hit, fallback_cc='AE'):
     li_co = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
     return {
         'id': f"li_{abs(hash(url+title+co))}", 'title': title, 'position_name': title, 'company': co,
-        'company_website': url, 'company_address': loc,
+        'company_website': co_url or url, 'company_address': loc,
         'location': loc, 'city': city, 'country': cname,
         'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
         'posted_date': '', 'posted_days_ago': pda,

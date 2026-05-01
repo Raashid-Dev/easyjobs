@@ -25,8 +25,23 @@
       "Drive BigQuery data pipelines and automation of reporting workflows",
       "Partner with marketing and product teams to translate insights into growth strategies"
     ],
-    "skills_required": ["GA4", "Power BI", "SQL", "BigQuery", "Looker", "Data Visualization", "GTM", "Digital Marketing Analytics", "Team Leadership"],
-    "nice_to_have": ["Python", "Tableau", "A/B Testing", "Machine Learning"],
+    "skills_required": [
+      "GA4",
+      "Power BI",
+      "SQL",
+      "BigQuery",
+      "Looker",
+      "Data Visualization",
+      "GTM",
+      "Digital Marketing Analytics",
+      "Team Leadership"
+    ],
+    "nice_to_have": [
+      "Python",
+      "Tableau",
+      "A/B Testing",
+      "Machine Learning"
+    ],
     "hr_contact": {
       "name": "Priya Nair",
       "title": "Senior Talent Acquisition Partner",
@@ -41,10 +56,24 @@
     "job_stability": 4.8,
     "glassdoor_rating": 4.2,
     "glassdoor_reviews": 4200,
-    "apply_url": "https://www.emiratesgroupcareers.com",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Head+of+Digital+Analytics+Emirates+Group&location=Dubai",
     "source": "Company Website",
-    "tags": ["Analytics", "Digital", "Leadership", "Aviation", "GA4"],
-    "skills_match": ["GA4", "Power BI", "SQL", "BigQuery", "Looker", "GTM", "Data Visualization"]
+    "tags": [
+      "Analytics",
+      "Digital",
+      "Leadership",
+      "Aviation",
+      "GA4"
+    ],
+    "skills_match": [
+      "GA4",
+      "Power BI",
+      "SQL",
+      "BigQuery",
+      "Looker",
+      "GTM",
+      "Data Visualization"
+    ]
   },
   {
     "id": "job_002",
@@ -72,8 +101,21 @@
       "Lead campaign analytics across paid, organic, and CRM channels",
       "Manage in-season sell-through and inventory analytics"
     ],
-    "skills_required": ["Power BI", "Tableau", "SQL", "Retail Analytics", "GA4", "CRM Analytics", "Data Visualization"],
-    "nice_to_have": ["Looker", "BigQuery", "Python", "Adobe Analytics"],
+    "skills_required": [
+      "Power BI",
+      "Tableau",
+      "SQL",
+      "Retail Analytics",
+      "GA4",
+      "CRM Analytics",
+      "Data Visualization"
+    ],
+    "nice_to_have": [
+      "Looker",
+      "BigQuery",
+      "Python",
+      "Adobe Analytics"
+    ],
     "hr_contact": {
       "name": "Fatima Al Rashidi",
       "title": "Talent Acquisition Lead",
@@ -88,10 +130,22 @@
     "job_stability": 4.5,
     "glassdoor_rating": 3.9,
     "glassdoor_reviews": 1800,
-    "apply_url": "https://careers.majidalfuttaim.com",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Analytics+Director+%E2%80%93+Retail+%26+E-commerce+Majid+Al+Futtaim&location=Dubai",
     "source": "LinkedIn",
-    "tags": ["Retail Analytics", "E-commerce", "Director", "MENA"],
-    "skills_match": ["Power BI", "Tableau", "SQL", "Retail Analytics", "GA4", "Data Visualization"]
+    "tags": [
+      "Retail Analytics",
+      "E-commerce",
+      "Director",
+      "MENA"
+    ],
+    "skills_match": [
+      "Power BI",
+      "Tableau",
+      "SQL",
+      "Retail Analytics",
+      "GA4",
+      "Data Visualization"
+    ]
   },
   {
     "id": "job_003",
@@ -119,8 +173,22 @@
       "Automate reporting pipelines using SQL and Python",
       "Build campaign effectiveness dashboards using GA4 and paid media data"
     ],
-    "skills_required": ["BigQuery", "Looker", "SQL", "Power BI", "GA4", "E-commerce Analytics", "Team Management", "Data Warehousing"],
-    "nice_to_have": ["Python", "dbt", "Tableau", "Amplitude"],
+    "skills_required": [
+      "BigQuery",
+      "Looker",
+      "SQL",
+      "Power BI",
+      "GA4",
+      "E-commerce Analytics",
+      "Team Management",
+      "Data Warehousing"
+    ],
+    "nice_to_have": [
+      "Python",
+      "dbt",
+      "Tableau",
+      "Amplitude"
+    ],
     "hr_contact": {
       "name": "Omar Khaled",
       "title": "People & Talent Partner",
@@ -135,10 +203,21 @@
     "job_stability": 4.0,
     "glassdoor_rating": 3.8,
     "glassdoor_reviews": 950,
-    "apply_url": "https://careers.noon.com",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Senior+Manager+%E2%80%93+Business+Intelligence+%26+Analytics+Noon.com&location=Dubai",
     "source": "LinkedIn",
-    "tags": ["E-commerce", "BI Manager", "Looker", "BigQuery"],
-    "skills_match": ["BigQuery", "Looker", "SQL", "Power BI", "GA4"]
+    "tags": [
+      "E-commerce",
+      "BI Manager",
+      "Looker",
+      "BigQuery"
+    ],
+    "skills_match": [
+      "BigQuery",
+      "Looker",
+      "SQL",
+      "Power BI",
+      "GA4"
+    ]
   },
   {
     "id": "job_004",
@@ -166,8 +245,21 @@
       "Lead A/B testing program and conversion rate optimization",
       "Deliver weekly KPI reports to CMO and digital leadership"
     ],
-    "skills_required": ["GA4", "GTM", "Looker Studio", "Power BI", "SQL", "Multi-market Analytics", "Paid Media Analytics"],
-    "nice_to_have": ["BigQuery", "Adobe Analytics", "Python", "Firebase"],
+    "skills_required": [
+      "GA4",
+      "GTM",
+      "Looker Studio",
+      "Power BI",
+      "SQL",
+      "Multi-market Analytics",
+      "Paid Media Analytics"
+    ],
+    "nice_to_have": [
+      "BigQuery",
+      "Adobe Analytics",
+      "Python",
+      "Firebase"
+    ],
     "hr_contact": {
       "name": "Heba Mohamed",
       "title": "Digital Talent Acquisition",
@@ -182,10 +274,23 @@
     "job_stability": 4.7,
     "glassdoor_rating": 4.0,
     "glassdoor_reviews": 2100,
-    "apply_url": "https://careers.eand.com",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Digital+Analytics+Lead+e%26+Etisalat&location=Dubai",
     "source": "Bayt.com",
-    "tags": ["Telecom", "Digital Analytics", "GA4", "GTM", "Multi-market"],
-    "skills_match": ["GA4", "GTM", "Looker Studio", "Power BI", "SQL", "Paid Media Analytics"]
+    "tags": [
+      "Telecom",
+      "Digital Analytics",
+      "GA4",
+      "GTM",
+      "Multi-market"
+    ],
+    "skills_match": [
+      "GA4",
+      "GTM",
+      "Looker Studio",
+      "Power BI",
+      "SQL",
+      "Paid Media Analytics"
+    ]
   },
   {
     "id": "job_005",
@@ -213,8 +318,21 @@
       "Manage client relationships and present insights to C-suite stakeholders",
       "Mentor junior analysts and consultants in the practice"
     ],
-    "skills_required": ["Power BI", "SQL", "GA4", "GTM", "Data Governance", "Client Management", "Consulting"],
-    "nice_to_have": ["Tableau", "Azure Analytics", "Python", "GDPR/Data Privacy"],
+    "skills_required": [
+      "Power BI",
+      "SQL",
+      "GA4",
+      "GTM",
+      "Data Governance",
+      "Client Management",
+      "Consulting"
+    ],
+    "nice_to_have": [
+      "Tableau",
+      "Azure Analytics",
+      "Python",
+      "GDPR/Data Privacy"
+    ],
     "hr_contact": {
       "name": "Reham Al Abbasi",
       "title": "Talent Acquisition – Advisory",
@@ -229,10 +347,23 @@
     "job_stability": 4.6,
     "glassdoor_rating": 4.1,
     "glassdoor_reviews": 12400,
-    "apply_url": "https://home.kpmg/ae/en/home/careers.html",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Senior+Analytics+Consultant+%E2%80%93+Digital+%26+Data+KPMG+Lower+Gulf&location=Dubai",
     "source": "LinkedIn",
-    "tags": ["Consulting", "Big4", "Analytics", "Power BI", "Client-facing"],
-    "skills_match": ["Power BI", "SQL", "GA4", "GTM", "Client Management", "Data Visualization"]
+    "tags": [
+      "Consulting",
+      "Big4",
+      "Analytics",
+      "Power BI",
+      "Client-facing"
+    ],
+    "skills_match": [
+      "Power BI",
+      "SQL",
+      "GA4",
+      "GTM",
+      "Client Management",
+      "Data Visualization"
+    ]
   },
   {
     "id": "job_006",
@@ -260,8 +391,22 @@
       "Create Power BI executive dashboards for brand-wise P&L analytics",
       "Lead in-season sell-through and inventory optimization analytics"
     ],
-    "skills_required": ["GA4", "GTM", "Power BI", "SQL", "Retail Analytics", "Luxury Retail", "CRM Analytics", "Team Leadership"],
-    "nice_to_have": ["Tableau", "BigQuery", "Python", "SAP Analytics"],
+    "skills_required": [
+      "GA4",
+      "GTM",
+      "Power BI",
+      "SQL",
+      "Retail Analytics",
+      "Luxury Retail",
+      "CRM Analytics",
+      "Team Leadership"
+    ],
+    "nice_to_have": [
+      "Tableau",
+      "BigQuery",
+      "Python",
+      "SAP Analytics"
+    ],
     "hr_contact": {
       "name": "Dina Khoury",
       "title": "Group Head of Talent Acquisition",
@@ -276,10 +421,23 @@
     "job_stability": 4.4,
     "glassdoor_rating": 3.9,
     "glassdoor_reviews": 620,
-    "apply_url": "https://careers.chalhoubgroup.com",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Head+of+Analytics+%26+Insights+Chalhoub+Group&location=Dubai",
     "source": "GulfTalent",
-    "tags": ["Luxury Retail", "Analytics Lead", "GA4", "CRM", "Consumer Insights"],
-    "skills_match": ["GA4", "GTM", "Power BI", "SQL", "Retail Analytics", "CRM Analytics"]
+    "tags": [
+      "Luxury Retail",
+      "Analytics Lead",
+      "GA4",
+      "CRM",
+      "Consumer Insights"
+    ],
+    "skills_match": [
+      "GA4",
+      "GTM",
+      "Power BI",
+      "SQL",
+      "Retail Analytics",
+      "CRM Analytics"
+    ]
   },
   {
     "id": "job_007",
@@ -307,8 +465,21 @@
       "Analyze user behavior, funnels, and A/B test results",
       "Manage BigQuery data pipeline and Looker Studio reports"
     ],
-    "skills_required": ["GA4", "GTM", "BigQuery", "Looker Studio", "SQL", "Marketing Analytics", "Dashboard Development"],
-    "nice_to_have": ["Power BI", "Amplitude", "Python", "Firebase Analytics"],
+    "skills_required": [
+      "GA4",
+      "GTM",
+      "BigQuery",
+      "Looker Studio",
+      "SQL",
+      "Marketing Analytics",
+      "Dashboard Development"
+    ],
+    "nice_to_have": [
+      "Power BI",
+      "Amplitude",
+      "Python",
+      "Firebase Analytics"
+    ],
     "hr_contact": {
       "name": "Aisha Binhendi",
       "title": "Talent Acquisition Specialist",
@@ -323,10 +494,22 @@
     "job_stability": 4.2,
     "glassdoor_rating": 4.1,
     "glassdoor_reviews": 380,
-    "apply_url": "https://careers.propertyfinder.ae",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Data+%26+Analytics+Manager+Property+Finder&location=Dubai",
     "source": "LinkedIn",
-    "tags": ["PropTech", "GA4", "Digital Analytics", "Looker", "BigQuery"],
-    "skills_match": ["GA4", "GTM", "BigQuery", "Looker Studio", "SQL"]
+    "tags": [
+      "PropTech",
+      "GA4",
+      "Digital Analytics",
+      "Looker",
+      "BigQuery"
+    ],
+    "skills_match": [
+      "GA4",
+      "GTM",
+      "BigQuery",
+      "Looker Studio",
+      "SQL"
+    ]
   },
   {
     "id": "job_008",
@@ -354,8 +537,21 @@
       "Develop GTM and GA4 analytics frameworks for digital transformation clients",
       "Present findings and strategies to C-level executives"
     ],
-    "skills_required": ["Power BI", "SQL", "DAX", "Data Modeling", "GA4", "Client Consulting", "Analytics Strategy"],
-    "nice_to_have": ["Azure Synapse", "Tableau", "Python", "TOGAF"],
+    "skills_required": [
+      "Power BI",
+      "SQL",
+      "DAX",
+      "Data Modeling",
+      "GA4",
+      "Client Consulting",
+      "Analytics Strategy"
+    ],
+    "nice_to_have": [
+      "Azure Synapse",
+      "Tableau",
+      "Python",
+      "TOGAF"
+    ],
     "hr_contact": {
       "name": "Lara Majdalani",
       "title": "Senior Recruiter – Advisory",
@@ -370,10 +566,23 @@
     "job_stability": 4.7,
     "glassdoor_rating": 4.0,
     "glassdoor_reviews": 18500,
-    "apply_url": "https://careers.pwc.com/middleeast",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Senior+Manager+%E2%80%93+BI+%26+Insights+PwC+Middle+East&location=Dubai",
     "source": "LinkedIn",
-    "tags": ["Big4", "Consulting", "Power BI", "BI Strategy", "Client Management"],
-    "skills_match": ["Power BI", "SQL", "DAX", "GA4", "Client Management", "Data Visualization"]
+    "tags": [
+      "Big4",
+      "Consulting",
+      "Power BI",
+      "BI Strategy",
+      "Client Management"
+    ],
+    "skills_match": [
+      "Power BI",
+      "SQL",
+      "DAX",
+      "GA4",
+      "Client Management",
+      "Data Visualization"
+    ]
   },
   {
     "id": "job_009",
@@ -401,8 +610,21 @@
       "Partner with product and marketing on A/B testing and campaign analytics",
       "Automate reporting and alert systems using SQL and Python"
     ],
-    "skills_required": ["BigQuery", "Looker", "SQL", "GA4", "Growth Analytics", "Cohort Analysis", "Data Pipelines"],
-    "nice_to_have": ["Python", "dbt", "Amplitude", "Airflow"],
+    "skills_required": [
+      "BigQuery",
+      "Looker",
+      "SQL",
+      "GA4",
+      "Growth Analytics",
+      "Cohort Analysis",
+      "Data Pipelines"
+    ],
+    "nice_to_have": [
+      "Python",
+      "dbt",
+      "Amplitude",
+      "Airflow"
+    ],
     "hr_contact": {
       "name": "Noor Al Sayed",
       "title": "Senior People Partner",
@@ -417,10 +639,21 @@
     "job_stability": 4.3,
     "glassdoor_rating": 4.0,
     "glassdoor_reviews": 1100,
-    "apply_url": "https://careers.careem.com",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Analytics+%26+Insights+Lead+Careem+%28Uber%29&location=Dubai",
     "source": "LinkedIn",
-    "tags": ["Tech", "Super-app", "BigQuery", "Looker", "Growth Analytics"],
-    "skills_match": ["BigQuery", "Looker", "SQL", "GA4"]
+    "tags": [
+      "Tech",
+      "Super-app",
+      "BigQuery",
+      "Looker",
+      "Growth Analytics"
+    ],
+    "skills_match": [
+      "BigQuery",
+      "Looker",
+      "SQL",
+      "GA4"
+    ]
   },
   {
     "id": "job_010",
@@ -448,8 +681,21 @@
       "Integrate CRM and POS data for omnichannel analytics",
       "Deliver actionable insights to brand digital managers"
     ],
-    "skills_required": ["GA4", "GTM", "Power BI", "SQL", "Paid Media Analytics", "E-commerce Analytics", "Multi-brand Management"],
-    "nice_to_have": ["Tableau", "BigQuery", "Adobe Analytics", "CRM Analytics"],
+    "skills_required": [
+      "GA4",
+      "GTM",
+      "Power BI",
+      "SQL",
+      "Paid Media Analytics",
+      "E-commerce Analytics",
+      "Multi-brand Management"
+    ],
+    "nice_to_have": [
+      "Tableau",
+      "BigQuery",
+      "Adobe Analytics",
+      "CRM Analytics"
+    ],
     "hr_contact": {
       "name": "Yasmine Saad",
       "title": "Regional Talent Acquisition Manager",
@@ -464,10 +710,22 @@
     "job_stability": 4.4,
     "glassdoor_rating": 3.8,
     "glassdoor_reviews": 1600,
-    "apply_url": "https://careers.alshaya.com",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Web+Analytics+%26+Campaign+Lead+Alshaya+Group&location=Dubai",
     "source": "GulfTalent",
-    "tags": ["Retail", "Multi-brand", "GA4", "Performance Marketing", "MENA"],
-    "skills_match": ["GA4", "GTM", "Power BI", "SQL", "Paid Media Analytics"]
+    "tags": [
+      "Retail",
+      "Multi-brand",
+      "GA4",
+      "Performance Marketing",
+      "MENA"
+    ],
+    "skills_match": [
+      "GA4",
+      "GTM",
+      "Power BI",
+      "SQL",
+      "Paid Media Analytics"
+    ]
   },
   {
     "id": "job_011",
@@ -495,8 +753,22 @@
       "Own BigQuery data pipelines and analytics automation",
       "Collaborate with global digital marketing teams to drive insights into action"
     ],
-    "skills_required": ["GA4", "GTM", "Power BI", "Looker", "BigQuery", "SQL", "Multi-market Analytics", "Team Leadership"],
-    "nice_to_have": ["Python", "Tableau", "Adobe Analytics", "dbt"],
+    "skills_required": [
+      "GA4",
+      "GTM",
+      "Power BI",
+      "Looker",
+      "BigQuery",
+      "SQL",
+      "Multi-market Analytics",
+      "Team Leadership"
+    ],
+    "nice_to_have": [
+      "Python",
+      "Tableau",
+      "Adobe Analytics",
+      "dbt"
+    ],
     "hr_contact": {
       "name": "Marie-Claire Dubois",
       "title": "Global Talent Acquisition Partner",
@@ -511,10 +783,25 @@
     "job_stability": 4.8,
     "glassdoor_rating": 4.1,
     "glassdoor_reviews": 9200,
-    "apply_url": "https://www.nestle.com/jobs",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Senior+Analytics+Manager+Nestl%C3%A9+Switzerland+%28HQ%29&location=Vevey",
     "source": "LinkedIn",
-    "tags": ["FMCG", "GA4", "Power BI", "Looker", "Global Analytics", "Switzerland"],
-    "skills_match": ["GA4", "GTM", "Power BI", "Looker", "BigQuery", "SQL", "Multi-market Analytics"]
+    "tags": [
+      "FMCG",
+      "GA4",
+      "Power BI",
+      "Looker",
+      "Global Analytics",
+      "Switzerland"
+    ],
+    "skills_match": [
+      "GA4",
+      "GTM",
+      "Power BI",
+      "Looker",
+      "BigQuery",
+      "SQL",
+      "Multi-market Analytics"
+    ]
   },
   {
     "id": "job_012",
@@ -542,8 +829,22 @@
       "Deliver insights to global digital marketing and commercial leadership",
       "Ensure GDPR and data privacy compliance in analytics implementations"
     ],
-    "skills_required": ["GA4", "GTM", "Looker", "BigQuery", "SQL", "Digital Analytics", "GDPR Compliance", "Pharma/Healthcare Digital"],
-    "nice_to_have": ["Power BI", "Tableau", "Python", "Consent Management Platforms"],
+    "skills_required": [
+      "GA4",
+      "GTM",
+      "Looker",
+      "BigQuery",
+      "SQL",
+      "Digital Analytics",
+      "GDPR Compliance",
+      "Pharma/Healthcare Digital"
+    ],
+    "nice_to_have": [
+      "Power BI",
+      "Tableau",
+      "Python",
+      "Consent Management Platforms"
+    ],
     "hr_contact": {
       "name": "Stefan Müller",
       "title": "Talent Acquisition Partner – Digital",
@@ -558,10 +859,24 @@
     "job_stability": 4.7,
     "glassdoor_rating": 4.1,
     "glassdoor_reviews": 7800,
-    "apply_url": "https://www.novartis.com/careers",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Digital+Analytics+Lead+Novartis&location=Basel",
     "source": "LinkedIn",
-    "tags": ["Pharma", "GA4", "Looker", "BigQuery", "Switzerland", "Global"],
-    "skills_match": ["GA4", "GTM", "Looker", "BigQuery", "SQL", "Digital Analytics"]
+    "tags": [
+      "Pharma",
+      "GA4",
+      "Looker",
+      "BigQuery",
+      "Switzerland",
+      "Global"
+    ],
+    "skills_match": [
+      "GA4",
+      "GTM",
+      "Looker",
+      "BigQuery",
+      "SQL",
+      "Digital Analytics"
+    ]
   },
   {
     "id": "job_013",
@@ -589,8 +904,21 @@
       "Deliver monthly digital performance reports to C-suite and board",
       "Work with data engineering on SQL pipelines for banking analytics"
     ],
-    "skills_required": ["GA4", "Power BI", "SQL", "Digital Analytics", "Banking Domain", "Executive Reporting", "Data Governance"],
-    "nice_to_have": ["Tableau", "Looker", "Python", "Snowflake"],
+    "skills_required": [
+      "GA4",
+      "Power BI",
+      "SQL",
+      "Digital Analytics",
+      "Banking Domain",
+      "Executive Reporting",
+      "Data Governance"
+    ],
+    "nice_to_have": [
+      "Tableau",
+      "Looker",
+      "Python",
+      "Snowflake"
+    ],
     "hr_contact": {
       "name": "Anna Kessler",
       "title": "Talent Acquisition – Technology",
@@ -605,10 +933,23 @@
     "job_stability": 4.5,
     "glassdoor_rating": 3.9,
     "glassdoor_reviews": 6500,
-    "apply_url": "https://www.ubs.com/careers",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Analytics+Manager+%E2%80%93+Wealth+Management+UBS&location=Zurich",
     "source": "jobs.ch",
-    "tags": ["Banking", "Finance", "GA4", "Power BI", "Zurich", "Wealth Management"],
-    "skills_match": ["GA4", "Power BI", "SQL", "Digital Analytics", "Executive Reporting"]
+    "tags": [
+      "Banking",
+      "Finance",
+      "GA4",
+      "Power BI",
+      "Zurich",
+      "Wealth Management"
+    ],
+    "skills_match": [
+      "GA4",
+      "Power BI",
+      "SQL",
+      "Digital Analytics",
+      "Executive Reporting"
+    ]
   },
   {
     "id": "job_014",
@@ -636,8 +977,21 @@
       "Manage SQL-based data extraction and reporting automation via BigQuery",
       "Drive adoption of analytics culture across commercial and digital teams"
     ],
-    "skills_required": ["GA4", "GTM", "Power BI", "Tableau", "SQL", "BigQuery", "Multi-market Analytics"],
-    "nice_to_have": ["Looker", "Python", "Snowflake", "Veeva CRM Analytics"],
+    "skills_required": [
+      "GA4",
+      "GTM",
+      "Power BI",
+      "Tableau",
+      "SQL",
+      "BigQuery",
+      "Multi-market Analytics"
+    ],
+    "nice_to_have": [
+      "Looker",
+      "Python",
+      "Snowflake",
+      "Veeva CRM Analytics"
+    ],
     "hr_contact": {
       "name": "Thomas Weber",
       "title": "Global Talent Partner",
@@ -652,10 +1006,24 @@
     "job_stability": 4.8,
     "glassdoor_rating": 4.3,
     "glassdoor_reviews": 5600,
-    "apply_url": "https://www.roche.com/careers",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Data+Insights+Lead+%E2%80%93+Global+Operations+Roche&location=Basel",
     "source": "LinkedIn",
-    "tags": ["Pharma", "GA4", "Power BI", "Tableau", "Basel", "Global"],
-    "skills_match": ["GA4", "GTM", "Power BI", "Tableau", "SQL", "BigQuery"]
+    "tags": [
+      "Pharma",
+      "GA4",
+      "Power BI",
+      "Tableau",
+      "Basel",
+      "Global"
+    ],
+    "skills_match": [
+      "GA4",
+      "GTM",
+      "Power BI",
+      "Tableau",
+      "SQL",
+      "BigQuery"
+    ]
   },
   {
     "id": "job_015",
@@ -683,8 +1051,21 @@
       "Lead analytics for Zurich's digital transformation program",
       "Present monthly digital performance to group digital leadership"
     ],
-    "skills_required": ["GA4", "Power BI", "Tableau", "SQL", "Digital Analytics", "Financial Services Analytics", "Data Visualization"],
-    "nice_to_have": ["Looker", "BigQuery", "Python", "Azure Analytics"],
+    "skills_required": [
+      "GA4",
+      "Power BI",
+      "Tableau",
+      "SQL",
+      "Digital Analytics",
+      "Financial Services Analytics",
+      "Data Visualization"
+    ],
+    "nice_to_have": [
+      "Looker",
+      "BigQuery",
+      "Python",
+      "Azure Analytics"
+    ],
     "hr_contact": {
       "name": "Claudia Bauer",
       "title": "Talent Acquisition Partner",
@@ -699,10 +1080,23 @@
     "job_stability": 4.6,
     "glassdoor_rating": 4.0,
     "glassdoor_reviews": 3800,
-    "apply_url": "https://careers.zurich.com",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Senior+Analytics+Manager+Zurich+Insurance+Group&location=Zurich",
     "source": "jobs.ch",
-    "tags": ["Insurance", "Finance", "GA4", "Power BI", "Tableau", "Zurich"],
-    "skills_match": ["GA4", "Power BI", "Tableau", "SQL", "Digital Analytics"]
+    "tags": [
+      "Insurance",
+      "Finance",
+      "GA4",
+      "Power BI",
+      "Tableau",
+      "Zurich"
+    ],
+    "skills_match": [
+      "GA4",
+      "Power BI",
+      "Tableau",
+      "SQL",
+      "Digital Analytics"
+    ]
   },
   {
     "id": "job_016",
@@ -730,8 +1124,22 @@
       "Drive BigQuery/SQL analytics pipelines from e-commerce platforms",
       "Present quarterly analytics strategy to CMO and CFO"
     ],
-    "skills_required": ["GA4", "GTM", "Tableau", "Power BI", "SQL", "BigQuery", "E-commerce Analytics", "Team Leadership"],
-    "nice_to_have": ["Looker", "Python", "Snowflake", "Salesforce Analytics"],
+    "skills_required": [
+      "GA4",
+      "GTM",
+      "Tableau",
+      "Power BI",
+      "SQL",
+      "BigQuery",
+      "E-commerce Analytics",
+      "Team Leadership"
+    ],
+    "nice_to_have": [
+      "Looker",
+      "Python",
+      "Snowflake",
+      "Salesforce Analytics"
+    ],
     "hr_contact": {
       "name": "Sophie Martin",
       "title": "Senior Talent Acquisition Partner",
@@ -746,10 +1154,24 @@
     "job_stability": 4.4,
     "glassdoor_rating": 4.1,
     "glassdoor_reviews": 2200,
-    "apply_url": "https://jobs.logitech.com",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Head+of+Analytics+Logitech&location=Lausanne",
     "source": "LinkedIn",
-    "tags": ["Tech", "Analytics Head", "GA4", "Tableau", "E-commerce", "Switzerland"],
-    "skills_match": ["GA4", "GTM", "Tableau", "Power BI", "SQL", "BigQuery"]
+    "tags": [
+      "Tech",
+      "Analytics Head",
+      "GA4",
+      "Tableau",
+      "E-commerce",
+      "Switzerland"
+    ],
+    "skills_match": [
+      "GA4",
+      "GTM",
+      "Tableau",
+      "Power BI",
+      "SQL",
+      "BigQuery"
+    ]
   },
   {
     "id": "job_017",
@@ -777,8 +1199,20 @@
       "Collaborate with actuarial and underwriting teams on KPI definition",
       "Own analytics governance and data quality framework"
     ],
-    "skills_required": ["Power BI", "SQL", "DAX", "Data Modeling", "BI Architecture", "Analytics Governance"],
-    "nice_to_have": ["Tableau", "Azure Synapse", "Python", "Snowflake"],
+    "skills_required": [
+      "Power BI",
+      "SQL",
+      "DAX",
+      "Data Modeling",
+      "BI Architecture",
+      "Analytics Governance"
+    ],
+    "nice_to_have": [
+      "Tableau",
+      "Azure Synapse",
+      "Python",
+      "Snowflake"
+    ],
     "hr_contact": {
       "name": "Patrick Zimmermann",
       "title": "Talent Acquisition Specialist",
@@ -793,10 +1227,22 @@
     "job_stability": 4.7,
     "glassdoor_rating": 4.2,
     "glassdoor_reviews": 1850,
-    "apply_url": "https://www.swissre.com/careers",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=BI+%26+Analytics+Lead+Swiss+Re&location=Zurich",
     "source": "jobs.ch",
-    "tags": ["Insurance", "Power BI", "SQL", "DAX", "BI Architecture", "Zurich"],
-    "skills_match": ["Power BI", "SQL", "DAX", "Data Modeling"]
+    "tags": [
+      "Insurance",
+      "Power BI",
+      "SQL",
+      "DAX",
+      "BI Architecture",
+      "Zurich"
+    ],
+    "skills_match": [
+      "Power BI",
+      "SQL",
+      "DAX",
+      "Data Modeling"
+    ]
   },
   {
     "id": "job_018",
@@ -824,8 +1270,23 @@
       "Own client C-suite relationships and analytics strategy development",
       "Grow Accenture's analytics practice revenue in UAE, KSA, and Egypt"
     ],
-    "skills_required": ["Analytics Strategy", "Power BI", "Tableau", "SQL", "BigQuery", "GA4", "Team Leadership", "Consulting", "Cloud Analytics"],
-    "nice_to_have": ["Python", "Azure Analytics", "Snowflake", "AI/ML platforms"],
+    "skills_required": [
+      "Analytics Strategy",
+      "Power BI",
+      "Tableau",
+      "SQL",
+      "BigQuery",
+      "GA4",
+      "Team Leadership",
+      "Consulting",
+      "Cloud Analytics"
+    ],
+    "nice_to_have": [
+      "Python",
+      "Azure Analytics",
+      "Snowflake",
+      "AI/ML platforms"
+    ],
     "hr_contact": {
       "name": "Zeina Habib",
       "title": "Senior Recruiter – Technology Consulting",
@@ -840,10 +1301,24 @@
     "job_stability": 4.5,
     "glassdoor_rating": 4.0,
     "glassdoor_reviews": 55000,
-    "apply_url": "https://www.accenture.com/ae-en/careers",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Analytics+Director+%E2%80%93+MENA+Accenture+Middle+East&location=Dubai",
     "source": "LinkedIn",
-    "tags": ["Consulting", "Director", "Analytics", "Google Cloud", "MENA", "Big Salary"],
-    "skills_match": ["Power BI", "Tableau", "SQL", "BigQuery", "GA4", "Team Leadership"]
+    "tags": [
+      "Consulting",
+      "Director",
+      "Analytics",
+      "Google Cloud",
+      "MENA",
+      "Big Salary"
+    ],
+    "skills_match": [
+      "Power BI",
+      "Tableau",
+      "SQL",
+      "BigQuery",
+      "GA4",
+      "Team Leadership"
+    ]
   },
   {
     "id": "job_019",
@@ -871,8 +1346,21 @@
       "Automate reporting using SQL and Google Data Studio / Looker Studio",
       "Work with global marketing directors on data-driven strategy"
     ],
-    "skills_required": ["GA4", "GTM", "Power BI", "Looker Studio", "SQL", "B2B Digital Analytics", "Marketing Analytics"],
-    "nice_to_have": ["Tableau", "BigQuery", "Python", "Salesforce Marketing Cloud"],
+    "skills_required": [
+      "GA4",
+      "GTM",
+      "Power BI",
+      "Looker Studio",
+      "SQL",
+      "B2B Digital Analytics",
+      "Marketing Analytics"
+    ],
+    "nice_to_have": [
+      "Tableau",
+      "BigQuery",
+      "Python",
+      "Salesforce Marketing Cloud"
+    ],
     "hr_contact": {
       "name": "Franziska Hofer",
       "title": "Talent Acquisition Manager – Digital",
@@ -887,10 +1375,22 @@
     "job_stability": 4.6,
     "glassdoor_rating": 3.9,
     "glassdoor_reviews": 4700,
-    "apply_url": "https://careers.abb.com",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Digital+Analytics+Manager+ABB&location=Zurich",
     "source": "LinkedIn",
-    "tags": ["Industrial Tech", "GA4", "Power BI", "B2B Analytics", "Zurich"],
-    "skills_match": ["GA4", "GTM", "Power BI", "Looker Studio", "SQL"]
+    "tags": [
+      "Industrial Tech",
+      "GA4",
+      "Power BI",
+      "B2B Analytics",
+      "Zurich"
+    ],
+    "skills_match": [
+      "GA4",
+      "GTM",
+      "Power BI",
+      "Looker Studio",
+      "SQL"
+    ]
   },
   {
     "id": "job_020",
@@ -918,8 +1418,23 @@
       "Manage GA4 and GTM across Dubizzle, Bayut, and OLX MENA sites",
       "Deliver weekly C-suite analytics reports on GMV and platform health"
     ],
-    "skills_required": ["BigQuery", "Looker", "GA4", "GTM", "SQL", "Team Leadership", "Marketplace Analytics", "Data Warehousing"],
-    "nice_to_have": ["Power BI", "Tableau", "Python", "dbt", "Amplitude"],
+    "skills_required": [
+      "BigQuery",
+      "Looker",
+      "GA4",
+      "GTM",
+      "SQL",
+      "Team Leadership",
+      "Marketplace Analytics",
+      "Data Warehousing"
+    ],
+    "nice_to_have": [
+      "Power BI",
+      "Tableau",
+      "Python",
+      "dbt",
+      "Amplitude"
+    ],
     "hr_contact": {
       "name": "Rania Hassan",
       "title": "Talent Lead – Product & Tech",
@@ -934,9 +1449,23 @@
     "job_stability": 4.1,
     "glassdoor_rating": 3.9,
     "glassdoor_reviews": 420,
-    "apply_url": "https://www.dubizzle.com/careers",
+    "apply_url": "https://www.linkedin.com/jobs/search/?keywords=Head+of+Data+%26+Analytics+Dubizzle+Group+%28OLX+MENA%29&location=Dubai",
     "source": "LinkedIn",
-    "tags": ["Marketplace", "Tech", "BigQuery", "Looker", "GA4", "Team Lead"],
-    "skills_match": ["BigQuery", "Looker", "GA4", "GTM", "SQL", "Team Leadership"]
+    "tags": [
+      "Marketplace",
+      "Tech",
+      "BigQuery",
+      "Looker",
+      "GA4",
+      "Team Lead"
+    ],
+    "skills_match": [
+      "BigQuery",
+      "Looker",
+      "GA4",
+      "GTM",
+      "SQL",
+      "Team Leadership"
+    ]
   }
 ]

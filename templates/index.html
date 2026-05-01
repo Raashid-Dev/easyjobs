@@ -556,6 +556,14 @@
       margin-top: 8px;
     }
     .apply-btn:hover { opacity: .9; }
+    .apply-btn-search {
+      background: linear-gradient(135deg, #0a66c2, #004182) !important;
+    }
+    .apply-btn-disabled {
+      background: var(--border2) !important;
+      cursor: not-allowed !important;
+      opacity: 0.5;
+    }
 
     /* ── Empty / Loading states ─────────────────────────── */
     .empty-state {
@@ -1457,8 +1465,8 @@ function jobCard(j) {
         <div class="icon-btn" onclick="copyLink(event,'${j.id}')" title="Copy link">
           <i class="fa fa-link"></i>
         </div>
-        <div class="icon-btn" onclick="openApply(event,'${j.apply_url||'#'}')" title="Apply now">
-          <i class="fa fa-external-link"></i>
+        <div class="icon-btn" onclick="openApply(event,'${j.apply_url||''}',${j.apply_url&&j.apply_url.includes('linkedin.com/jobs/search')?'\'linkedin\'':j.apply_url&&!isDirectJobLink(j.apply_url)?'\'careers\'':'null'})" title="${j.apply_url&&isDirectJobLink(j.apply_url)?'Apply directly':'Search for this role'}">
+          <i class="fa ${j.apply_url&&isDirectJobLink(j.apply_url)?'fa-external-link':'fa-search'}"></i>
         </div>
       </div>
     </div>
@@ -1633,9 +1641,7 @@ function buildDetail(j) {
   </div>
 
   <!-- Apply buttons -->
-  <button class="apply-btn" onclick="openApply(null, '${j.apply_url}')">
-    <i class="fa fa-paper-plane"></i> Apply Now
-  </button>
+  ${buildApplyButton(j)}
   <div style="display:flex;gap:8px;margin-top:8px;">
     <button class="btn btn-outline" style="flex:1;justify-content:center;"
       onclick="toggleSave(null,'${j.id}')">
@@ -1727,10 +1733,44 @@ function toggleSave(e, id) {
   applyAllFilters();
 }
 
-function openApply(e, url) {
+function isDirectJobLink(url) {
+  if (!url) return false;
+  // Direct job posting: contains a unique job ID path segment
+  return (
+    /\/(jobs\/view|details|viewjob|job\/|ad\/|jobs\/\d)/i.test(url) ||
+    /[?&](jk|jobId|jobid|job_id|id)=/i.test(url) ||
+    /(reed\.co\.uk|remoteok\.com|arbeitnow\.com|adzuna\.com|indeed\.|glassdoor\.|lever\.co|greenhouse\.io|workable\.com|workday\.com|smartrecruiters\.com|recruitee\.com|jobvite\.com|taleo\.net)/i.test(url)
+  );
+}
+
+function buildApplyButton(j) {
+  const url   = j.apply_url || '';
+  const isDirect = isDirectJobLink(url);
+  const isLI  = url.includes('linkedin.com/jobs/search');
+  if (!url) return `<button class="apply-btn apply-btn-disabled" disabled>
+    <i class="fa fa-ban"></i> No Apply Link
+  </button>`;
+  if (isDirect) {
+    return `<button class="apply-btn" onclick="openApply(null,'${url}')">
+      <i class="fa fa-paper-plane"></i> Apply Now — Direct Job Link
+    </button>`;
+  } else if (isLI) {
+    return `<button class="apply-btn apply-btn-search" onclick="openApply(null,'${url}','linkedin')">
+      <i class="fa-brands fa-linkedin"></i> Search on LinkedIn
+    </button>`;
+  } else {
+    return `<button class="apply-btn apply-btn-search" onclick="openApply(null,'${url}','careers')">
+      <i class="fa fa-briefcase"></i> Go to Careers Page
+    </button>`;
+  }
+}
+
+function openApply(e, url, type) {
   if (e) e.stopPropagation();
-  if (url) window.open(url, '_blank');
-  else showToast('No apply URL available');
+  if (!url) { showToast('No apply URL available'); return; }
+  window.open(url, '_blank');
+  if (type === 'linkedin') showToast('🔍 Searching LinkedIn — look for the role by title');
+  else if (type === 'careers') showToast('Opening careers page — search for the role there');
 }
 
 function copyLink(e, id) {
