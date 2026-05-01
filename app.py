@@ -154,9 +154,14 @@ def stats():
         'london':      sum(1 for j in jobs if city_match(j, 'london')),
         'saudi':       sum(1 for j in jobs if 'saudi' in (j.get('country') or '').lower()),
         'bahrain':     sum(1 for j in jobs if 'bahrain' in (j.get('country') or '').lower()),
+        'qatar':       sum(1 for j in jobs if 'qatar' in (j.get('country') or '').lower()),
+        'kuwait':      sum(1 for j in jobs if 'kuwait' in (j.get('country') or '').lower()),
+        'middle_east': sum(1 for j in jobs if (j.get('country') or '').lower() in
+                           ('uae', 'saudi arabia', 'bahrain', 'qatar', 'kuwait', 'oman')),
         'mumbai':      sum(1 for j in jobs if city_match(j, 'mumbai')),
         'delhi':       sum(1 for j in jobs if city_match(j, 'delhi') or city_match(j, 'gurgaon') or city_match(j, 'noida')),
         'bangalore':   sum(1 for j in jobs if city_match(j, 'bangalore') or city_match(j, 'bengaluru')),
+        'singapore':   sum(1 for j in jobs if (j.get('country') or '').lower() == 'singapore'),
         'usa':         sum(1 for j in jobs if (j.get('country') or '').lower() == 'usa'),
         'canada':      sum(1 for j in jobs if (j.get('country') or '').lower() == 'canada'),
         'europe':      sum(1 for j in jobs if (j.get('country') or '').lower() in

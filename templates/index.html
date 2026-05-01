@@ -879,22 +879,55 @@
 
     <div class="filter-group">
       <div class="filter-title">
+        Region
+        <span class="clear-btn" onclick="clearFilter('region')">Clear</span>
+      </div>
+      <div class="filter-chips" id="filter-region">
+        <div class="chip active" data-val="all"          onclick="toggleChip(this,'region')">🌐 All</div>
+        <div class="chip" data-val="middle-east"         onclick="toggleChip(this,'region')">🌙 Middle East</div>
+        <div class="chip" data-val="europe"              onclick="toggleChip(this,'region')">🌍 Europe</div>
+        <div class="chip" data-val="asia"                onclick="toggleChip(this,'region')">🌏 Asia</div>
+        <div class="chip" data-val="americas"            onclick="toggleChip(this,'region')">🌎 Americas</div>
+        <div class="chip" data-val="oceania"             onclick="toggleChip(this,'region')">🦘 Oceania</div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-title">
         Location
         <span class="clear-btn" onclick="clearFilter('location')">Clear</span>
       </div>
       <div class="filter-chips" id="filter-location">
-        <div class="chip active" data-val="all" onclick="toggleChip(this,'location')">All</div>
-        <div class="chip" data-val="USA" onclick="toggleChip(this,'location')">🇺🇸 USA</div>
-        <div class="chip" data-val="Dubai" onclick="toggleChip(this,'location')">🇦🇪 Dubai</div>
-        <div class="chip" data-val="London" onclick="toggleChip(this,'location')">🇬🇧 London</div>
-        <div class="chip" data-val="Germany" onclick="toggleChip(this,'location')">🇩🇪 Germany</div>
-        <div class="chip" data-val="Switzerland" onclick="toggleChip(this,'location')">🇨🇭 Switzerland</div>
-        <div class="chip" data-val="Canada" onclick="toggleChip(this,'location')">🇨🇦 Canada</div>
-        <div class="chip" data-val="Saudi" onclick="toggleChip(this,'location')">🇸🇦 Saudi</div>
-        <div class="chip" data-val="Bahrain" onclick="toggleChip(this,'location')">🇧🇭 Bahrain</div>
-        <div class="chip" data-val="Mumbai" onclick="toggleChip(this,'location')">🏙 Mumbai</div>
-        <div class="chip" data-val="Delhi" onclick="toggleChip(this,'location')">🏛 Delhi</div>
-        <div class="chip" data-val="Bangalore" onclick="toggleChip(this,'location')">💻 Bangalore</div>
+        <div class="chip active" data-val="all"         onclick="toggleChip(this,'location')">All</div>
+        <!-- Middle East -->
+        <div class="chip" data-val="Dubai"              onclick="toggleChip(this,'location')">🇦🇪 Dubai</div>
+        <div class="chip" data-val="Abu Dhabi"          onclick="toggleChip(this,'location')">🇦🇪 Abu Dhabi</div>
+        <div class="chip" data-val="Saudi"              onclick="toggleChip(this,'location')">🇸🇦 Saudi</div>
+        <div class="chip" data-val="Qatar"              onclick="toggleChip(this,'location')">🇶🇦 Qatar</div>
+        <div class="chip" data-val="Kuwait"             onclick="toggleChip(this,'location')">🇰🇼 Kuwait</div>
+        <div class="chip" data-val="Bahrain"            onclick="toggleChip(this,'location')">🇧🇭 Bahrain</div>
+        <!-- Europe -->
+        <div class="chip" data-val="London"             onclick="toggleChip(this,'location')">🇬🇧 London</div>
+        <div class="chip" data-val="Germany"            onclick="toggleChip(this,'location')">🇩🇪 Germany</div>
+        <div class="chip" data-val="Switzerland"        onclick="toggleChip(this,'location')">🇨🇭 Switzerland</div>
+        <div class="chip" data-val="Netherlands"        onclick="toggleChip(this,'location')">🇳🇱 Netherlands</div>
+        <div class="chip" data-val="France"             onclick="toggleChip(this,'location')">🇫🇷 France</div>
+        <div class="chip" data-val="Ireland"            onclick="toggleChip(this,'location')">🇮🇪 Ireland</div>
+        <div class="chip" data-val="Sweden"             onclick="toggleChip(this,'location')">🇸🇪 Sweden</div>
+        <div class="chip" data-val="Spain"              onclick="toggleChip(this,'location')">🇪🇸 Spain</div>
+        <div class="chip" data-val="Italy"              onclick="toggleChip(this,'location')">🇮🇹 Italy</div>
+        <div class="chip" data-val="Austria"            onclick="toggleChip(this,'location')">🇦🇹 Austria</div>
+        <!-- Asia -->
+        <div class="chip" data-val="Singapore"          onclick="toggleChip(this,'location')">🇸🇬 Singapore</div>
+        <div class="chip" data-val="Mumbai"             onclick="toggleChip(this,'location')">🏙 Mumbai</div>
+        <div class="chip" data-val="Delhi"              onclick="toggleChip(this,'location')">🏛 Delhi</div>
+        <div class="chip" data-val="Bangalore"          onclick="toggleChip(this,'location')">💻 Bangalore</div>
+        <div class="chip" data-val="Hong Kong"          onclick="toggleChip(this,'location')">🇭🇰 Hong Kong</div>
+        <!-- Americas -->
+        <div class="chip" data-val="USA"                onclick="toggleChip(this,'location')">🇺🇸 USA</div>
+        <div class="chip" data-val="Canada"             onclick="toggleChip(this,'location')">🇨🇦 Canada</div>
+        <!-- Oceania -->
+        <div class="chip" data-val="Australia"          onclick="toggleChip(this,'location')">🇦🇺 Australia</div>
       </div>
     </div>
 
@@ -1159,15 +1192,31 @@ function getCheckedSkills() {
   return [...document.querySelectorAll('#skillFilter input:checked')].map(i => i.value.toLowerCase());
 }
 
-/* helper: parse "2.52 CR" / "1.49 CR – 1.82 CR" → first number as float */
+/* helper: parse salary string → float in CR units for comparisons */
 function parseCR(s) {
   if (!s || s === 'Not disclosed') return null;
+  // Handle "XXX L" or "XX L" (Lakhs)
+  const lMatch = s.match(/^([\d.]+)\s*L$/i);
+  if (lMatch) return parseFloat(lMatch[1]) / 100;
+  // Handle "X.XX CR"
   const m = s.match(/([\d.]+)/);
   return m ? parseFloat(m[1]) : null;
 }
 
+/* helper: convert "0.XX CR" → "XX L" for display; ≥1 CR stays as CR */
+function formatINR(s) {
+  if (!s || s === 'Not disclosed') return s;
+  const crMatch = s.match(/^([\d.]+)\s*CR$/i);
+  if (crMatch) {
+    const val = parseFloat(crMatch[1]);
+    if (val > 0 && val < 1.0) return `${Math.round(val * 100)} L`;
+  }
+  return s;
+}
+
 function applyAllFilters() {
   const q         = document.getElementById('searchInput').value.toLowerCase().trim();
+  const region    = getActiveChip('region');
   const loc       = getActiveChip('location');
   const salaryINR = getActiveChip('salaryinr');
   const category  = getActiveChip('category');
@@ -1185,18 +1234,45 @@ function applyAllFilters() {
     return t.includes(q);
   });
 
+  /* ── region ─────────────────────────────────────────── */
+  const REGION_KEYWORDS = {
+    'middle-east': ['dubai','abu dhabi','uae','saudi','riyadh','jeddah','bahrain','qatar','doha','kuwait','oman','muscat'],
+    'europe':      ['uk','united kingdom','london','manchester','germany','berlin','munich','frankfurt','switzerland','zurich','geneva','france','paris','netherlands','amsterdam','sweden','stockholm','ireland','dublin','spain','madrid','barcelona','italy','milan','rome','austria','vienna','belgium','brussels','denmark','norway','portugal'],
+    'asia':        ['india','mumbai','delhi','bangalore','bengaluru','hyderabad','chennai','singapore','hong kong','japan','tokyo','malaysia','kuala lumpur','thailand','bangkok','indonesia','jakarta'],
+    'americas':    ['usa','united states','new york','san francisco','seattle','chicago','los angeles','boston','toronto','vancouver','montreal','canada'],
+    'oceania':     ['australia','sydney','melbourne','brisbane','perth','new zealand','auckland']
+  };
+  if (region && region !== 'all') {
+    const kws = REGION_KEYWORDS[region] || [];
+    jobs = jobs.filter(j => {
+      const h = [j.city||'', j.country||'', j.location||''].join(' ').toLowerCase();
+      return kws.some(k => h.includes(k));
+    });
+  }
+
   /* ── location ───────────────────────────────────────── */
   if (loc && loc !== 'all') {
     const l = loc.toLowerCase();
     jobs = jobs.filter(j => {
       const h = [j.city||'', j.country||'', j.location||''].join(' ').toLowerCase();
-      if (l === 'bangalore') return h.includes('bangalore') || h.includes('bengaluru');
-      if (l === 'delhi')     return h.includes('delhi') || h.includes('gurgaon') || h.includes('noida');
-      if (l === 'mumbai')    return h.includes('mumbai') || h.includes('bombay');
-      if (l === 'usa')       return h.includes('usa') || h.includes('united states');
-      if (l === 'london')    return h.includes('london');
-      if (l === 'saudi')     return h.includes('saudi');
-      if (l === 'bahrain')   return h.includes('bahrain');
+      if (l === 'bangalore')   return h.includes('bangalore') || h.includes('bengaluru');
+      if (l === 'delhi')       return h.includes('delhi') || h.includes('gurgaon') || h.includes('noida');
+      if (l === 'mumbai')      return h.includes('mumbai') || h.includes('bombay');
+      if (l === 'usa')         return h.includes('usa') || h.includes('united states');
+      if (l === 'london')      return h.includes('london');
+      if (l === 'saudi')       return h.includes('saudi');
+      if (l === 'bahrain')     return h.includes('bahrain');
+      if (l === 'abu dhabi')   return h.includes('abu dhabi');
+      if (l === 'qatar')       return h.includes('qatar') || h.includes('doha');
+      if (l === 'kuwait')      return h.includes('kuwait');
+      if (l === 'hong kong')   return h.includes('hong kong');
+      if (l === 'netherlands') return h.includes('netherlands') || h.includes('amsterdam') || h.includes('rotterdam');
+      if (l === 'ireland')     return h.includes('ireland') || h.includes('dublin');
+      if (l === 'sweden')      return h.includes('sweden') || h.includes('stockholm');
+      if (l === 'spain')       return h.includes('spain') || h.includes('madrid') || h.includes('barcelona');
+      if (l === 'italy')       return h.includes('italy') || h.includes('milan') || h.includes('rome');
+      if (l === 'austria')     return h.includes('austria') || h.includes('vienna');
+      if (l === 'australia')   return h.includes('australia') || h.includes('sydney') || h.includes('melbourne');
       return h.includes(l);
     });
   }
@@ -1273,6 +1349,10 @@ function renderJobs(jobs) {
     ${jobs.map(j => jobCard(j)).join('')}`;
   syncMobileCount(jobs.length);
   updateFilterBadge();
+  // Auto-open first job on desktop when filter changes
+  if (jobs.length > 0 && window.innerWidth > 768) {
+    openDetail(jobs[0].id);
+  }
 }
 
 const LOGO_COLORS = [
@@ -1320,7 +1400,7 @@ function jobCard(j) {
 
   // Salary display
   const salLocal = (j.salary_local && j.salary_local !== 'Not disclosed') ? j.salary_local : '';
-  const salINR   = (j.salary_inr_annual && j.salary_inr_annual !== 'Not disclosed') ? j.salary_inr_annual : '';
+  const salINR   = (j.salary_inr_annual && j.salary_inr_annual !== 'Not disclosed') ? formatINR(j.salary_inr_annual) : '';
 
   return `<div class="job-card" id="card-${j.id}" onclick="openDetail('${j.id}')">
     <div class="card-top">
@@ -1441,7 +1521,7 @@ function buildDetail(j) {
     </div>
     <div class="detail-badges">
       <div class="dbadge loc"><i class="fa fa-location-dot"></i>${j.location}</div>
-      <div class="dbadge sal"><i class="fa fa-indian-rupee-sign"></i>${j.salary_inr_annual} / yr</div>
+      <div class="dbadge sal"><i class="fa fa-indian-rupee-sign"></i>${formatINR(j.salary_inr_annual)} / yr</div>
       <div class="dbadge sal"><i class="fa fa-dollar-sign"></i>$${Math.round((j.salary_usd_annual||0)/1000)}k USD</div>
       <div class="dbadge exp"><i class="fa fa-clock"></i>${j.experience_required}</div>
       <div class="dbadge type"><i class="fa fa-briefcase"></i>${j.job_type}</div>
@@ -1524,7 +1604,7 @@ function buildDetail(j) {
     <div class="hr-card">
       <div class="hr-name">${j.hr_contact.name}</div>
       <div class="hr-title-text">${j.hr_contact.title}</div>
-      ${j.hr_contact.email ? `
+      ${isValidEmail(j.hr_contact.email) ? `
       <div class="hr-contact-row"><i class="fa fa-envelope"></i>
         <a href="mailto:${j.hr_contact.email}">${j.hr_contact.email}</a></div>` : ''}
       ${isValidPhone(j.hr_contact.phone) ? `
@@ -1568,6 +1648,10 @@ function isValidPhone(phone) {
   if (!phone || typeof phone !== 'string') return false;
   const p = phone.trim();
   return p.length >= 7 && /^[\+\d\s\-\(\)\.]{7,25}$/.test(p);
+}
+function isValidEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+  return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email.trim());
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1649,12 +1733,12 @@ function closeMobileFilters() {
 }
 
 function clearAllFilters() {
-  ['location','salaryinr','category','workmode','jobtype','posted'].forEach(g => clearFilter(g));
+  ['region','location','salaryinr','category','workmode','jobtype','posted'].forEach(g => clearFilter(g));
   updateFilterBadge();
 }
 
 function updateFilterBadge() {
-  const active = ['location','salaryinr','category','workmode','jobtype','posted']
+  const active = ['region','location','salaryinr','category','workmode','jobtype','posted']
     .filter(g => getActiveChip(g) !== 'all').length;
   const badge = document.getElementById('mfbBadge');
   if (badge) {

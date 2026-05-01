@@ -129,7 +129,32 @@ ADZUNA_SEARCHES = [
     ('fr','data analytics manager','France'),
     ('fr','digital marketing analytics','France'),
     ('fr','senior analytics manager','France'),
+    # Netherlands
+    ('nl','data analytics manager','Netherlands'),
+    ('nl','business intelligence manager','Netherlands'),
+    ('nl','digital analytics manager','Netherlands'),
+    ('nl','senior analytics manager','Netherlands'),
+    ('nl','data engineer','Netherlands'),
+    ('nl','marketing analytics','Netherlands'),
+    # Italy
+    ('it','data analytics manager','Italy'),
+    ('it','business intelligence manager','Italy'),
+    ('it','senior analytics manager','Italy'),
+    ('it','data engineer','Italy'),
+    # Spain
+    ('es','data analytics manager','Spain'),
+    ('es','business intelligence manager','Spain'),
+    ('es','digital analytics','Spain'),
+    # Austria
+    ('at','data analytics manager','Austria'),
+    ('at','business intelligence manager','Austria'),
+    ('at','senior analytics manager','Austria'),
+    # Belgium
+    ('be','data analytics manager','Belgium'),
+    ('be','business intelligence manager','Belgium'),
+    ('be','digital analytics manager','Belgium'),
 ]
+# Note: Ireland (ie), Sweden (se) not supported by Adzuna — covered via Apify/Arbeitnow
 
 REED_SEARCHES = [
     ('data analytics manager','London'),
@@ -147,31 +172,42 @@ JSEARCH_SEARCHES = [
     ('data analytics manager Riyadh Saudi Arabia','SA'),
     ('senior analytics manager Abu Dhabi UAE','AE'),
     ('digital analytics lead Dubai UAE','AE'),
+    ('data analytics manager Doha Qatar','QA'),
+    ('business intelligence manager Qatar','QA'),
+    ('analytics manager Kuwait City Kuwait','KW'),
+    ('data analytics manager Manama Bahrain','BH'),
 ]
 JSEARCH_DAILY_FILE = os.path.join(BASE, 'data', 'jsearch_last_run.json')
 
 # Apify search plans
 APIFY_LI_SEARCHES = [
     # (keywords, location, fallback_country_code)
-    ('data analytics manager',        'Dubai',     'AE'),
-    ('business intelligence manager', 'Dubai',     'AE'),
-    ('digital analytics manager',     'Dubai',     'AE'),
-    ('marketing analytics manager',   'Dubai',     'AE'),
-    ('analytics manager',             'Riyadh',    'SA'),
-    ('data analytics manager',        'Singapore', 'sg'),
-    ('operations manager analytics',  'Dubai',     'AE'),
-    ('data analytics director',       'London',    'gb'),
-    ('marketing analytics manager',   'New York',  'us'),
+    ('data analytics manager',        'Dubai',              'AE'),
+    ('business intelligence manager', 'Dubai',              'AE'),
+    ('digital analytics manager',     'Dubai',              'AE'),
+    ('marketing analytics manager',   'Dubai',              'AE'),
+    ('analytics manager',             'Riyadh Saudi Arabia','SA'),
+    ('data analytics manager',        'Doha Qatar',         'QA'),
+    ('analytics manager',             'Kuwait City',        'KW'),
+    ('data analytics manager',        'Singapore',          'sg'),
+    ('analytics manager',             'Amsterdam Netherlands','nl'),
+    ('data analytics manager',        'Dublin Ireland',     'ie'),
+    ('data analytics director',       'London',             'gb'),
+    ('marketing analytics manager',   'New York',           'us'),
+    ('data analytics manager',        'Hong Kong',          'HK'),
 ]
 
 APIFY_GJ_SEARCHES = [
     # (keywords, location, fallback_country_code)
-    ('data analytics manager',        'Dubai UAE',  'AE'),
-    ('business intelligence manager', 'Dubai',      'AE'),
-    ('analytics manager',             'Singapore',  'sg'),
-    ('data analytics manager',        'India',      'in'),
-    ('digital analytics director',    'Germany',    'de'),
-    ('analytics manager',             'Canada',     'ca'),
+    ('data analytics manager',        'Dubai UAE',    'AE'),
+    ('analytics manager',             'Qatar',        'QA'),
+    ('analytics manager',             'Kuwait',       'KW'),
+    ('analytics manager',             'Singapore',    'sg'),
+    ('data analytics manager',        'Netherlands',  'nl'),
+    ('analytics manager',             'Ireland',      'ie'),
+    ('data analytics manager',        'India',        'in'),
+    ('digital analytics director',    'Germany',      'de'),
+    ('analytics manager',             'Canada',       'ca'),
 ]
 
 # ── PROFILE ───────────────────────────────────────────────────────────────────
@@ -260,9 +296,20 @@ CURRENCY = {
     'ch':('CHF',95,1.12),'de':('EUR',90,1.08),'gb':('GBP',105,1.25),
     'in':('INR',1,0.012),'sg':('SGD',62,0.74),'au':('AUD',55,0.65),
     'ca':('CAD',61,0.74),'fr':('EUR',90,1.08),
+    'nl':('EUR',90,1.08),'NL':('EUR',90,1.08),
+    'it':('EUR',90,1.08),'IT':('EUR',90,1.08),
+    'es':('EUR',90,1.08),'ES':('EUR',90,1.08),
+    'at':('EUR',90,1.08),'AT':('EUR',90,1.08),
+    'ie':('EUR',90,1.08),'IE':('EUR',90,1.08),
+    'se':('SEK',7,0.085),'SE':('SEK',7,0.085),
+    'dk':('DKK',12,0.144),'DK':('DKK',12,0.144),
     'AE':('AED',23,0.272),'ae':('AED',23,0.272),
     'SA':('SAR',22,0.267),'sa':('SAR',22,0.267),
     'BH':('BHD',222,2.65),'bh':('BHD',222,2.65),
+    'QA':('QAR',23,0.274),'qa':('QAR',23,0.274),
+    'KW':('KWD',275,3.27),'kw':('KWD',275,3.27),
+    'OM':('OMR',216,2.60),'om':('OMR',216,2.60),
+    'HK':('HKD',11,0.128),'hk':('HKD',11,0.128),
 }
 COUNTRY_NAME = {
     'ch':'Switzerland','CH':'Switzerland','de':'Germany','DE':'Germany',
@@ -271,12 +318,29 @@ COUNTRY_NAME = {
     'fr':'France','FR':'France','AE':'UAE','ae':'UAE',
     'SA':'Saudi Arabia','sa':'Saudi Arabia','BH':'Bahrain','bh':'Bahrain',
     'US':'USA','us':'USA',
+    'nl':'Netherlands','NL':'Netherlands',
+    'it':'Italy','IT':'Italy',
+    'es':'Spain','ES':'Spain',
+    'at':'Austria','AT':'Austria',
+    'ie':'Ireland','IE':'Ireland',
+    'se':'Sweden','SE':'Sweden',
+    'dk':'Denmark','DK':'Denmark',
+    'QA':'Qatar','qa':'Qatar',
+    'KW':'Kuwait','kw':'Kuwait',
+    'OM':'Oman','om':'Oman',
+    'HK':'Hong Kong','hk':'Hong Kong',
 }
 
 def fmt_salary(lo, hi, cc):
     sym, inr_rate, usd_rate = CURRENCY.get(cc, ('USD',83,1.0))
     mid = (lo + hi) / 2 if hi > lo else lo
-    sal_inr = f"{mid * inr_rate / 1e7:.2f} CR" if mid else 'Not disclosed'
+    inr_val = mid * inr_rate if mid else 0
+    if inr_val >= 1e7:
+        sal_inr = f"{inr_val / 1e7:.2f} CR"
+    elif inr_val >= 1e5:
+        sal_inr = f"{int(inr_val / 1e5)} L"
+    else:
+        sal_inr = 'Not disclosed'
     sal_loc = f"{sym} {int(lo):,} – {int(hi):,} / year" if hi > 0 else 'Not disclosed'
     sal_usd = int(mid * usd_rate) if mid else 0
     return sal_loc, sal_inr, sal_usd
@@ -611,15 +675,25 @@ def _guess_country(location_str):
     loc = (location_str or '').lower()
     if 'dubai' in loc or 'abu dhabi' in loc or ' uae' in loc: return 'AE'
     if 'saudi' in loc or 'riyadh' in loc or 'jeddah' in loc: return 'SA'
-    if 'bahrain' in loc: return 'BH'
+    if 'qatar' in loc or 'doha' in loc: return 'QA'
+    if 'kuwait' in loc: return 'KW'
+    if 'bahrain' in loc or 'manama' in loc: return 'BH'
+    if 'oman' in loc or 'muscat' in loc: return 'OM'
     if 'singapore' in loc: return 'sg'
+    if 'hong kong' in loc: return 'HK'
     if 'london' in loc or ' uk' in loc or 'united kingdom' in loc: return 'gb'
-    if 'germany' in loc or 'berlin' in loc or 'munich' in loc: return 'de'
+    if 'germany' in loc or 'berlin' in loc or 'munich' in loc or 'frankfurt' in loc: return 'de'
     if 'switzerland' in loc or 'zurich' in loc or 'geneva' in loc: return 'ch'
+    if 'netherlands' in loc or 'amsterdam' in loc or 'rotterdam' in loc: return 'nl'
+    if 'ireland' in loc or 'dublin' in loc: return 'ie'
+    if 'sweden' in loc or 'stockholm' in loc: return 'se'
+    if 'spain' in loc or 'madrid' in loc or 'barcelona' in loc: return 'es'
+    if 'italy' in loc or 'milan' in loc or 'rome' in loc: return 'it'
+    if 'austria' in loc or 'vienna' in loc: return 'at'
+    if 'france' in loc or 'paris' in loc: return 'fr'
     if 'india' in loc or 'mumbai' in loc or 'bangalore' in loc or 'bengaluru' in loc or 'delhi' in loc: return 'in'
     if 'canada' in loc or 'toronto' in loc or 'vancouver' in loc: return 'ca'
     if 'australia' in loc or 'sydney' in loc or 'melbourne' in loc: return 'au'
-    if 'france' in loc or 'paris' in loc: return 'fr'
     if 'new york' in loc or 'chicago' in loc or 'san francisco' in loc or 'seattle' in loc: return 'us'
     return ''
 
