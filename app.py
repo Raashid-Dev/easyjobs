@@ -82,6 +82,8 @@ def load_jobs():
     with open(path) as f:
         raw = json.load(f)
     filtered = [j for j in raw if not is_spam(j)]
+    # Remove stale jobs older than 6 months (180 days)
+    filtered = [j for j in filtered if (j.get('posted_days_ago') or 0) <= 180]
     return dedup_jobs(filtered)
 
 def save_timestamp(count, source='Adzuna'):

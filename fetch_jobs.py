@@ -266,8 +266,9 @@ def is_spam(title, desc, company=''):
     return False
 
 # ── HELPERS ───────────────────────────────────────────────────────────────────
-def calc_fit(text):
-    t = (text or '').lower()
+def calc_fit(text, title=''):
+    # Include both description and title in skill matching
+    t = ((text or '') + ' ' + (title or '')).lower()
     matched = sum(1 for s in MY_SKILLS if s in t)
     skill_pct = min(100, int((matched / len(MY_SKILLS)) * 220))
     exp_match = 100 if MY_EXP_YEARS >= 8 else 70
@@ -364,7 +365,7 @@ def infer_work_mode(title, desc, is_remote=False):
     if is_remote or 'remote' in t or 'work from home' in t: return 'WFH'
     if 'hybrid' in t: return 'Hybrid'
     if 'freelance' in t or 'contract' in t: return 'Freelance'
-    return 'Hybrid'
+    return 'On-site'
 
 # ── 1. ADZUNA ─────────────────────────────────────────────────────────────────
 ADZUNA_URL = 'https://api.adzuna.com/v1/api/jobs/{country}/search/1'
@@ -400,7 +401,7 @@ def norm_adzuna(hit, cc, city_hint=None):
         'glassdoor_rating':4.0,'glassdoor_reviews':0,
         'apply_url':hit.get('redirect_url',''),'source':'Adzuna','tags':[cat,cname],
         'skills_match':[s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
-        'fit_score':calc_fit(desc),
+        'fit_score':calc_fit(desc, title),
     }
 
 def fetch_adzuna(cc, query, city_hint=None):
@@ -420,7 +421,8 @@ def norm_reed(hit):
     lo = float(hit.get('minimumSalary') or 0); hi = float(hit.get('maximumSalary') or 0)
     sal_loc, sal_inr, sal_usd = fmt_salary(lo, hi, 'gb')
     title = hit.get('jobTitle','Analytics Role'); co = hit.get('employerName','Unknown')
-    loc = hit.get('locationName','UK'); desc = hit.get('jobDescription','')
+    loc = hit.get('locationName','UK')
+    desc = strip_html(hit.get('jobDescription',''))
     if is_spam(title, desc, co): return None
     li_co = co.lower().replace(' ','-').replace('.','').replace(',','')
     return {
@@ -441,7 +443,7 @@ def norm_reed(hit):
         'glassdoor_rating':3.8,'glassdoor_reviews':0,
         'apply_url':hit.get('jobUrl',''),'source':'Reed.co.uk','tags':['UK','London','Analytics'],
         'skills_match':[s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
-        'fit_score':calc_fit(desc),
+        'fit_score':calc_fit(desc, title),
     }
 
 def fetch_reed(keywords, location):
@@ -503,7 +505,7 @@ def norm_jsearch(hit):
         'glassdoor_rating':4.0,'glassdoor_reviews':0,
         'apply_url':url,'source':f'JSearch ({pub})','tags':[cname,'Analytics'],
         'skills_match':[s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
-        'fit_score':calc_fit(desc),
+        'fit_score':calc_fit(desc, title),
     }
 
 def fetch_jsearch(query, cc):
@@ -528,10 +530,19 @@ REMOTEOK_TAGS = [
     'growth','seo','crm','reporting','backend','python','sql',
 ]
 
+def strip_html(text):
+    """Remove HTML tags and decode common entities from a string."""
+    if not text: return ''
+    clean = re.sub(r'<[^>]+>', ' ', text)
+    clean = clean.replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>') \
+                 .replace('&nbsp;', ' ').replace('&#39;', "'").replace('&quot;', '"')
+    clean = re.sub(r'\s{2,}', ' ', clean).strip()
+    return clean
+
 def norm_remoteok(hit):
     title   = (hit.get('position') or '').strip()
     co      = (hit.get('company') or 'Unknown').strip()
-    desc    = (hit.get('description') or '').strip()
+    desc    = strip_html((hit.get('description') or '').strip())
     url     = (hit.get('url') or '').strip()
     sal_lo  = int(hit.get('salary_min') or 0)
     sal_hi  = int(hit.get('salary_max') or 0)
@@ -558,7 +569,7 @@ def norm_remoteok(hit):
         'glassdoor_rating': 3.8, 'glassdoor_reviews': 0,
         'apply_url': url, 'source': 'RemoteOK', 'tags': ['Remote', 'USA'],
         'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
-        'fit_score': calc_fit(desc),
+        'fit_score': calc_fit(desc, title),
     }
 
 def fetch_remoteok():
@@ -614,7 +625,7 @@ def norm_arbeitnow(hit):
         'glassdoor_rating': 3.8, 'glassdoor_reviews': 0,
         'apply_url': url, 'source': 'Arbeitnow', 'tags': [cname, 'Europe'],
         'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
-        'fit_score': calc_fit(desc),
+        'fit_score': calc_fit(desc, title),
     }
 
 def fetch_arbeitnow():
@@ -754,7 +765,7 @@ def norm_linkedin(hit, fallback_cc='AE'):
         'glassdoor_rating': 4.2, 'glassdoor_reviews': 0,
         'apply_url': url, 'source': 'LinkedIn (Apify)', 'tags': [cname, 'LinkedIn'],
         'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
-        'fit_score': calc_fit(desc),
+        'fit_score': calc_fit(desc, title),
     }
 
 def fetch_apify_linkedin(queries_cc):
@@ -816,7 +827,7 @@ def norm_google_jobs(hit, fallback_cc='us'):
         'glassdoor_rating': 4.0, 'glassdoor_reviews': 0,
         'apply_url': url, 'source': 'Google Jobs (Apify)', 'tags': [cname, 'Google Jobs'],
         'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
-        'fit_score': calc_fit(desc),
+        'fit_score': calc_fit(desc, title),
     }
 
 def fetch_apify_google_jobs(queries_cc):

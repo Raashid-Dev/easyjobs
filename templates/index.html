@@ -1224,6 +1224,9 @@ function applyAllFilters() {
   const jobtype   = getActiveChip('jobtype');
   const posted    = getActiveChip('posted');
   const sortBy    = document.getElementById('sortSelect').value;
+  // Sync mobile sort select to match desktop
+  const mobileSort = document.getElementById('mobileSortSelect');
+  if (mobileSort && mobileSort.value !== sortBy) mobileSort.value = sortBy;
 
   let jobs = allJobs.slice();
 
@@ -1374,7 +1377,9 @@ function jobCard(j) {
   const circleOffset = 113 - (fitScore / 100) * 113;
   const isSaved   = saved.includes(j.id);
   const daysAgo   = j.posted_days_ago ?? 999;
-  const daysLabel = daysAgo === 0 ? 'Today' : daysAgo === 1 ? 'Yesterday' : `${daysAgo}d ago`;
+  const hasPostedDate = j.posted_date && j.posted_date.trim() !== '';
+  const daysLabel = (daysAgo === 0 && !hasPostedDate) ? 'Recent' :
+                    daysAgo === 0 ? 'Today' : daysAgo === 1 ? 'Yesterday' : `${daysAgo}d ago`;
   const isNew     = daysAgo <= 2;
 
   // Seniority level derived from title
@@ -1496,15 +1501,25 @@ function buildDetail(j) {
   const stars = '★'.repeat(Math.round(j.glassdoor_rating||4)) + '☆'.repeat(5 - Math.round(j.glassdoor_rating||4));
   const gdUrl = 'https://www.glassdoor.com/Search/results.htm?keyword=' + encodeURIComponent(j.company || '');
   const isSaved = saved.includes(j.id);
-  const daysLabel = j.posted_days_ago === 0 ? 'Posted today' :
+  const hasDate = j.posted_date && j.posted_date.trim() !== '';
+  const daysLabel = (j.posted_days_ago === 0 && !hasDate) ? 'Recently posted' :
+                    j.posted_days_ago === 0 ? 'Posted today' :
                     j.posted_days_ago === 1 ? 'Posted yesterday' :
                     `Posted ${j.posted_days_ago} days ago`;
+  const dateStr = hasDate ? ` · ${j.posted_date}` : '';
 
   const respHtml = (j.responsibilities||[]).map(r => `<li>${r}</li>`).join('');
   const matchedSkills = (j.skills_required||[]).filter(s =>
     MY_SKILLS_LOWER.some(ms => s.toLowerCase().includes(ms)));
   const unmatchedSkills = (j.skills_required||[]).filter(s =>
     !MY_SKILLS_LOWER.some(ms => s.toLowerCase().includes(ms)));
+
+  const salINRBadge = (j.salary_inr_annual && j.salary_inr_annual !== 'Not disclosed')
+    ? `<div class="dbadge sal"><i class="fa fa-indian-rupee-sign"></i>${formatINR(j.salary_inr_annual)} / yr</div>`
+    : '';
+  const salUSDBadge = (j.salary_usd_annual && j.salary_usd_annual > 0)
+    ? `<div class="dbadge sal"><i class="fa fa-dollar-sign"></i>$${Math.round(j.salary_usd_annual/1000)}k USD</div>`
+    : '';
 
   return `
   <div class="mobile-back-btn" onclick="closeDetail()">
@@ -1521,14 +1536,14 @@ function buildDetail(j) {
     </div>
     <div class="detail-badges">
       <div class="dbadge loc"><i class="fa fa-location-dot"></i>${j.location}</div>
-      <div class="dbadge sal"><i class="fa fa-indian-rupee-sign"></i>${formatINR(j.salary_inr_annual)} / yr</div>
-      <div class="dbadge sal"><i class="fa fa-dollar-sign"></i>$${Math.round((j.salary_usd_annual||0)/1000)}k USD</div>
+      ${salINRBadge}
+      ${salUSDBadge}
       <div class="dbadge exp"><i class="fa fa-clock"></i>${j.experience_required}</div>
       <div class="dbadge type"><i class="fa fa-briefcase"></i>${j.job_type}</div>
       ${j.is_mnc ? '<div class="dbadge mnc"><i class="fa fa-building"></i>MNC</div>' : ''}
     </div>
     <div style="font-size:11px;color:var(--muted2);margin-top:4px;">
-      <i class="fa fa-clock" style="color:var(--teal)"></i> ${daysLabel} · ${j.posted_date} · Source: ${j.source}
+      <i class="fa fa-clock" style="color:var(--teal)"></i> ${daysLabel}${dateStr} · Source: ${j.source}
     </div>
   </div>
 
