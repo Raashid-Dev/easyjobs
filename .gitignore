@@ -12,7 +12,11 @@ venv/
 env/
 .venv/
 
-# Runtime data (keep sample + live for deploy, ignore lock files)
+# Runtime data — never commit these
+data/live_jobs.json
+data/users.db
+data/users.db-shm
+data/users.db-wal
 data/jsearch_last_run.json
 data/last_updated.json
 logs/
