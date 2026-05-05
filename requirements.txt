@@ -1,3 +1,4 @@
 flask
 gunicorn
 requests
+python-jobspy>=1.1.0

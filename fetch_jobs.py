@@ -1,19 +1,42 @@
 """
 fetch_jobs.py — EasyJobs multi-source job fetcher
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Sources:
+Sources (all free, no paid plan needed):
   1. Adzuna     — USA, Switzerland, Germany, UK, India, Singapore, AU, CA, FR
   2. Reed.co.uk — London / UK (free, 50 req/day)
   3. JSearch    — LinkedIn + Indeed globally incl. Dubai/Gulf
                   (free 200 req/month, runs once per day)
   4. RemoteOK   — 100% free, no auth, remote analytics/ops/backend roles
   5. Arbeitnow  — 100% free, no auth, Europe-focused tech roles
-  6. Apify      — LinkedIn Jobs + Google Jobs (requires APIFY_TOKEN env var)
-  7. Curated    — sample_jobs.json (Gulf hand-picked)
+  6. Remotive   — 100% free, no auth, remote jobs worldwide
+  7. Jobicy     — 100% free, no auth, remote jobs worldwide
+  8. Himalayas  — 100% free, no auth, remote jobs with salary data
+  9. JobSpy     — 100% free, scrapes Indeed directly (Python 3.11+ required)
+ 10. Apify      — OPTIONAL: LinkedIn + Google Jobs (costs money, skip if not needed)
 """
 
-import os, re, json, time, base64, urllib.request, urllib.parse
+import os, re, json, time, base64, urllib.request, urllib.parse, ssl
 from datetime import datetime, timezone, date
+
+# ── SSL fix for Python 3.11+ on macOS (certifi CA bundle) ────────────────────
+try:
+    import certifi as _certifi
+    _SSL_CTX = ssl.create_default_context(cafile=_certifi.where())
+except Exception:
+    _SSL_CTX = ssl.create_default_context()
+    _SSL_CTX.check_hostname = False
+    _SSL_CTX.verify_mode = ssl.CERT_NONE
+
+def _urlopen(req, timeout=12):
+    """urllib.request.urlopen wrapper that always uses our SSL context."""
+    return urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX)
+
+# Optional: JobSpy (python-jobspy package, Python 3.11+)
+try:
+    from jobspy import scrape_jobs as _jobspy_scrape
+    JOBSPY_OK = True
+except ImportError:
+    JOBSPY_OK = False
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
@@ -275,8 +298,129 @@ ADZUNA_SEARCHES = [
     ('us','brand manager','USA'),
     ('in','marketing manager','India'),
     ('in','brand manager','India'),
+    # ── BLUE COLLAR — India — all major cities ────────────────────────────────
+    # Mumbai
+    ('in','driver job mumbai','India - Mumbai'),
+    ('in','electrician job mumbai','India - Mumbai'),
+    ('in','plumber mumbai','India - Mumbai'),
+    ('in','ac technician mumbai','India - Mumbai'),
+    ('in','carpenter job mumbai','India - Mumbai'),
+    ('in','welder job mumbai','India - Mumbai'),
+    ('in','tailor job mumbai','India - Mumbai'),
+    ('in','cutting master mumbai','India - Mumbai'),
+    ('in','maintenance technician mumbai','India - Mumbai'),
+    ('in','mechanic job mumbai','India - Mumbai'),
+    # Delhi / NCR
+    ('in','driver job delhi','India - Delhi'),
+    ('in','electrician job delhi','India - Delhi'),
+    ('in','plumber job delhi','India - Delhi'),
+    ('in','ac technician delhi','India - Delhi'),
+    ('in','carpenter job delhi','India - Delhi'),
+    ('in','welder job delhi','India - Delhi'),
+    ('in','tailor job delhi','India - Delhi'),
+    ('in','maintenance worker delhi','India - Delhi'),
+    ('in','mechanic job delhi','India - Delhi'),
+    # Bangalore
+    ('in','driver job bangalore','India - Bangalore'),
+    ('in','electrician job bangalore','India - Bangalore'),
+    ('in','plumber job bangalore','India - Bangalore'),
+    ('in','ac technician bangalore','India - Bangalore'),
+    ('in','carpenter job bangalore','India - Bangalore'),
+    ('in','maintenance technician bangalore','India - Bangalore'),
+    # Chennai
+    ('in','driver job chennai','India - Chennai'),
+    ('in','electrician job chennai','India - Chennai'),
+    ('in','plumber job chennai','India - Chennai'),
+    ('in','welder job chennai','India - Chennai'),
+    ('in','tailor job chennai','India - Chennai'),
+    ('in','cutting master chennai','India - Chennai'),
+    ('in','hvac technician chennai','India - Chennai'),
+    # Hyderabad
+    ('in','driver job hyderabad','India - Hyderabad'),
+    ('in','electrician job hyderabad','India - Hyderabad'),
+    ('in','plumber job hyderabad','India - Hyderabad'),
+    ('in','ac technician hyderabad','India - Hyderabad'),
+    ('in','carpenter hyderabad','India - Hyderabad'),
+    # Pune
+    ('in','driver job pune','India - Pune'),
+    ('in','electrician job pune','India - Pune'),
+    ('in','welder job pune','India - Pune'),
+    ('in','maintenance technician pune','India - Pune'),
+    # Ahmedabad / Surat (textile hub — tailors, cutting masters)
+    ('in','tailor job ahmedabad','India - Ahmedabad'),
+    ('in','cutting master ahmedabad','India - Ahmedabad'),
+    ('in','garment job ahmedabad','India - Ahmedabad'),
+    ('in','tailor job surat','India - Surat'),
+    ('in','cutting master surat','India - Surat'),
+    ('in','electrician job ahmedabad','India - Ahmedabad'),
+    # General India (no city — catches all remaining)
+    ('in','driver job','India'),
+    ('in','electrician job','India'),
+    ('in','plumber job','India'),
+    ('in','ac technician job','India'),
+    ('in','carpenter job','India'),
+    ('in','welder job','India'),
+    ('in','tailor job','India'),
+    ('in','cutting master job','India'),
+    ('in','maintenance technician job','India'),
+    ('in','hvac technician','India'),
+    ('in','mechanic job','India'),
+    ('in','auto mechanic job','India'),
+    ('in','vehicle technician','India'),
+    ('in','tile fixer job','India'),
+    ('in','mason job','India'),
+    ('in','fabricator job','India'),
+    ('in','spray painter job','India'),
+    ('in','handyman job','India'),
+    # ── BLUE COLLAR — UK (Adzuna) ─────────────────────────────────────────────
+    ('gb','electrician job','UK'),
+    ('gb','plumber job','UK'),
+    ('gb','hvac engineer','UK'),
+    ('gb','carpenter job','UK'),
+    ('gb','welder job','UK'),
+    ('gb','maintenance technician','UK'),
+    ('gb','vehicle technician','UK'),
+    ('gb','mechanic job','UK'),
+    ('gb','tailor job london','UK'),
+    # ── BLUE COLLAR — Australia ───────────────────────────────────────────────
+    ('au','electrician job','Australia'),
+    ('au','plumber job','Australia'),
+    ('au','carpenter job','Australia'),
+    ('au','welder job','Australia'),
+    ('au','hvac technician','Australia'),
+    ('au','maintenance technician','Australia'),
+    ('au','mechanic job','Australia'),
+    # ── BLUE COLLAR — Canada ──────────────────────────────────────────────────
+    ('ca','electrician job','Canada'),
+    ('ca','plumber job','Canada'),
+    ('ca','hvac technician','Canada'),
+    ('ca','carpenter job','Canada'),
+    ('ca','welder job','Canada'),
+    # ── BLUE COLLAR — Germany ─────────────────────────────────────────────────
+    ('de','electrician job','Germany'),
+    ('de','plumber job','Germany'),
+    ('de','maintenance technician','Germany'),
+    ('de','welder job','Germany'),
+    # ── BLUE COLLAR — Singapore ───────────────────────────────────────────────
+    ('sg','electrician job','Singapore'),
+    ('sg','plumber job','Singapore'),
+    ('sg','maintenance technician','Singapore'),
+    ('sg','hvac technician','Singapore'),
+    # ── BLUE COLLAR — New Zealand ─────────────────────────────────────────────
+    ('nz','electrician job','New Zealand'),
+    ('nz','plumber job','New Zealand'),
+    ('nz','carpenter job','New Zealand'),
+    ('nz','mechanic job','New Zealand'),
+    ('nz','welder job','New Zealand'),
+    # ── BLUE COLLAR — South Africa ────────────────────────────────────────────
+    ('za','driver job','South Africa'),
+    ('za','electrician job','South Africa'),
+    ('za','plumber job','South Africa'),
+    ('za','welder job','South Africa'),
+    ('za','maintenance technician','South Africa'),
+    ('za','mechanic job','South Africa'),
 ]
-# Note: Ireland (ie), Sweden (se) not supported by Adzuna — covered via Apify/Arbeitnow
+# Note: Ireland (ie), Sweden (se) not supported by Adzuna — covered via Arbeitnow
 
 REED_SEARCHES = [
     ('data analytics manager','London'),
@@ -356,6 +500,152 @@ JSEARCH_SEARCHES = [
     ('fresher analyst Riyadh Saudi Arabia','SA'),
     ('graduate trainee Dubai UAE','AE'),
     ('associate analyst Dubai UAE','AE'),
+    # ── IRELAND (not in Adzuna) ───────────────────────────────────────────────
+    ('data analytics manager Dublin Ireland','IE'),
+    ('analytics manager Ireland','IE'),
+    ('digital analytics Dublin Ireland','IE'),
+    ('business intelligence manager Ireland','IE'),
+    ('hr manager Dublin Ireland','IE'),
+    ('finance manager Dublin Ireland','IE'),
+    ('sales manager Dublin Ireland','IE'),
+    ('product manager Dublin Ireland','IE'),
+    # ── HONG KONG ────────────────────────────────────────────────────────────
+    ('data analytics manager Hong Kong','HK'),
+    ('digital analytics manager Hong Kong','HK'),
+    ('business intelligence manager Hong Kong','HK'),
+    ('analytics manager Hong Kong','HK'),
+    ('finance manager Hong Kong','HK'),
+    # ── OMAN / BAHRAIN (Gulf expansion) ──────────────────────────────────────
+    ('analytics manager Muscat Oman','OM'),
+    ('hr manager Bahrain','BH'),
+    ('finance manager Bahrain','BH'),
+    # ── BLUE COLLAR — UAE / Dubai ─────────────────────────────────────────────
+    ('driver job Dubai UAE','AE'),
+    ('heavy driver Dubai UAE','AE'),
+    ('electrician job Dubai UAE','AE'),
+    ('plumber job Dubai UAE','AE'),
+    ('ac technician job Dubai UAE','AE'),
+    ('hvac technician Dubai UAE','AE'),
+    ('maintenance technician Dubai UAE','AE'),
+    ('carpenter job Dubai UAE','AE'),
+    ('welder job Dubai UAE','AE'),
+    ('fabricator job Dubai UAE','AE'),
+    ('tailor job Dubai UAE','AE'),
+    ('cutting master Dubai UAE','AE'),
+    ('garment technician Dubai','AE'),
+    ('mechanic job Dubai UAE','AE'),
+    ('auto mechanic Dubai','AE'),
+    ('painter job Dubai UAE','AE'),
+    ('handyman job Dubai UAE','AE'),
+    ('tile fixer Dubai UAE','AE'),
+    ('mason job Dubai UAE','AE'),
+    # ── BLUE COLLAR — UAE Abu Dhabi / Sharjah ────────────────────────────────
+    ('electrician job Abu Dhabi UAE','AE'),
+    ('plumber job Abu Dhabi UAE','AE'),
+    ('driver job Abu Dhabi UAE','AE'),
+    ('ac technician Abu Dhabi','AE'),
+    ('carpenter job Abu Dhabi','AE'),
+    ('welder job Abu Dhabi','AE'),
+    ('maintenance technician Abu Dhabi','AE'),
+    ('mechanic job Abu Dhabi UAE','AE'),
+    ('electrician job Sharjah UAE','AE'),
+    ('driver job Sharjah UAE','AE'),
+    ('plumber job Sharjah','AE'),
+    ('maintenance worker Sharjah','AE'),
+    # ── BLUE COLLAR — Saudi Arabia ────────────────────────────────────────────
+    ('driver job Riyadh Saudi Arabia','SA'),
+    ('electrician job Riyadh Saudi Arabia','SA'),
+    ('plumber job Saudi Arabia','SA'),
+    ('maintenance worker Saudi Arabia','SA'),
+    ('ac technician Saudi Arabia','SA'),
+    ('welder job Saudi Arabia','SA'),
+    ('carpenter job Saudi Arabia','SA'),
+    ('hvac technician Saudi Arabia','SA'),
+    ('mechanic job Riyadh','SA'),
+    ('driver job Jeddah Saudi Arabia','SA'),
+    ('electrician job Jeddah','SA'),
+    ('plumber job Jeddah Saudi Arabia','SA'),
+    ('tailor job Saudi Arabia','SA'),
+    ('fabricator job Saudi Arabia','SA'),
+    # ── BLUE COLLAR — Qatar ───────────────────────────────────────────────────
+    ('driver job Qatar Doha','QA'),
+    ('electrician job Qatar','QA'),
+    ('plumber job Qatar','QA'),
+    ('ac technician Qatar','QA'),
+    ('welder job Qatar','QA'),
+    ('maintenance technician Qatar','QA'),
+    ('carpenter job Qatar','QA'),
+    ('mechanic job Doha Qatar','QA'),
+    # ── BLUE COLLAR — Kuwait / Bahrain / Oman ────────────────────────────────
+    ('driver job Kuwait','KW'),
+    ('electrician job Kuwait','KW'),
+    ('maintenance technician Kuwait','KW'),
+    ('plumber job Kuwait','KW'),
+    ('welder job Kuwait','KW'),
+    ('driver job Bahrain','BH'),
+    ('electrician job Bahrain','BH'),
+    ('maintenance technician Bahrain','BH'),
+    ('driver job Oman Muscat','OM'),
+    ('electrician job Oman','OM'),
+    ('maintenance technician Oman','OM'),
+    ('plumber job Oman','OM'),
+    ('welder job Oman','OM'),
+    # ── BLUE COLLAR — India (JSearch — LinkedIn/Indeed India) ─────────────────
+    ('driver job Mumbai India','IN'),
+    ('electrician job Mumbai India','IN'),
+    ('plumber job Mumbai India','IN'),
+    ('ac technician Mumbai India','IN'),
+    ('carpenter job Mumbai India','IN'),
+    ('welder job Mumbai India','IN'),
+    ('driver job Delhi India','IN'),
+    ('electrician job Delhi India','IN'),
+    ('plumber job Delhi India','IN'),
+    ('ac technician Delhi India','IN'),
+    ('welder job Delhi India','IN'),
+    ('mechanic job Delhi India','IN'),
+    ('driver job Bangalore India','IN'),
+    ('electrician job Bangalore India','IN'),
+    ('maintenance technician Bangalore India','IN'),
+    ('welder job Bangalore India','IN'),
+    ('driver job Chennai India','IN'),
+    ('electrician job Chennai India','IN'),
+    ('plumber job Chennai India','IN'),
+    ('welder job Chennai India','IN'),
+    ('driver job Hyderabad India','IN'),
+    ('electrician job Hyderabad India','IN'),
+    ('ac technician Hyderabad India','IN'),
+    ('maintenance technician Hyderabad India','IN'),
+    ('driver job Pune India','IN'),
+    ('electrician job Pune India','IN'),
+    ('welder job Pune India','IN'),
+    ('tailor job Ahmedabad India','IN'),
+    ('cutting master Ahmedabad India','IN'),
+    ('electrician job Ahmedabad India','IN'),
+    ('tailor job Surat India','IN'),
+    ('cutting master Surat India','IN'),
+    ('driver job India','IN'),
+    ('electrician job India','IN'),
+    ('plumber job India','IN'),
+    ('hvac technician India','IN'),
+    ('carpenter job India','IN'),
+    ('mechanic job India','IN'),
+    # ── BLUE COLLAR — UK (JSearch via Indeed UK) ─────────────────────────────
+    ('electrician job London UK','GB'),
+    ('plumber job London UK','GB'),
+    ('hvac engineer London','GB'),
+    ('carpenter job UK','GB'),
+    ('welder job UK','GB'),
+    ('mechanic job UK','GB'),
+    ('maintenance technician UK','GB'),
+    ('driver job UK','GB'),
+    # ── BLUE COLLAR — Australia (JSearch via Indeed AU) ───────────────────────
+    ('electrician job Sydney Australia','AU'),
+    ('plumber job Melbourne Australia','AU'),
+    ('carpenter job Australia','AU'),
+    ('welder job Australia','AU'),
+    ('hvac technician Australia','AU'),
+    ('mechanic job Australia','AU'),
+    ('maintenance technician Australia','AU'),
 ]
 JSEARCH_DAILY_FILE = os.path.join(BASE, 'data', 'jsearch_last_run.json')
 
@@ -456,6 +746,18 @@ TITLE_KW = [
     # Product
     'product manager','product director','head of product','vp product',
     'product analytics','product operations','product marketing',
+    # Blue Collar / Trades
+    'driver','heavy driver','light driver','truck driver','bus driver','cab driver',
+    'electrician','electrical technician','electrical fitter',
+    'plumber','plumbing technician',
+    'ac technician','hvac technician','hvac engineer','refrigeration technician',
+    'carpenter','woodworker','furniture maker',
+    'welder','fabricator','fitter',
+    'tailor','cutting master','pattern cutter','garment','stitching',
+    'painter ','spray painter',
+    'mechanic','auto mechanic','vehicle technician',
+    'maintenance technician','maintenance worker','handyman',
+    'mason','tile layer','flooring',
     # Fresher / Entry-level (any category)
     'junior analyst','junior data','junior hr','junior sales','junior finance',
     'junior marketing','junior product','graduate analyst','graduate trainee',
@@ -463,8 +765,8 @@ TITLE_KW = [
     'fresher analyst','data analyst fresher','associate analyst','trainee analyst',
 ]
 HARD_BLOCK = [
-    'driver','delivery boy','warehouse','nurse','teacher','security guard',
-    'cook ','chef','cashier','receptionist','electrician','plumber','mechanic',
+    'delivery boy','warehouse','nurse','teacher','security guard',
+    'cook ','chef','cashier','receptionist',
     'telemarketing','domestic','factory worker','labourer',
     'solicitor','lawyer','legal counsel','construction manager',
     'pre construction','quantity surveyor','customer engineer',
@@ -625,6 +927,12 @@ def infer_category(title):
         return 'Business Intelligence'
     if any(k in t for k in ['web analytics','tag manager','gtm']):
         return 'Web Analytics'
+    if any(k in t for k in ['driver','electrician','plumber','ac technician','hvac',
+                             'carpenter','welder','fabricator','fitter','tailor',
+                             'cutting master','pattern cutter','garment','stitching',
+                             'painter ','mechanic','auto mechanic','maintenance technician',
+                             'maintenance worker','handyman','mason','tile layer']):
+        return 'Blue Collar'
     return 'Data Analytics'
 
 def infer_experience(title, desc=''):
@@ -645,6 +953,16 @@ def infer_experience(title, desc=''):
                              'senior','manager','director','lead ']):
         return '5+ years', 5
     return '3+ years', 3
+
+def extract_phone(text):
+    """Extract the first valid phone number from a text string."""
+    if not text: return ''
+    matches = re.findall(r'(?:\+?[\d][\d\s\-\.\(\)]{8,20}[\d])', text)
+    for m in matches:
+        digits = re.sub(r'\D', '', m)
+        if 7 <= len(digits) <= 15 and not re.match(r'^(19|20)\d{2}', digits):
+            return m.strip()
+    return ''
 
 def infer_work_mode(title, desc, is_remote=False):
     t = (title + ' ' + (desc or ''))[:500].lower()
@@ -681,7 +999,8 @@ def norm_adzuna(hit, cc, city_hint=None):
         'description':desc,'responsibilities':[],
         'skills_required':[s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have':[],
-        'hr_contact':{'name':f'{co} HR','title':'Talent Acquisition','email':'','linkedin':f'https://www.linkedin.com/company/{li_co}/jobs/','phone':''},
+        'hr_contact':{'name':f'{co} HR','title':'Talent Acquisition','email':'','linkedin':f'https://www.linkedin.com/company/{li_co}/jobs/','phone':extract_phone(desc)},
+        'has_phone': bool(extract_phone(desc)),
         'is_mnc':True,'company_size':'Not disclosed','company_size_category':'Unknown',
         'industry':cat,'category':infer_category(title),
         'work_mode':infer_work_mode(title,desc),'job_stability':4.0,
@@ -695,7 +1014,7 @@ def fetch_adzuna(cc, query, city_hint=None):
     params = urllib.parse.urlencode({'app_id':ADZUNA_APP_ID,'app_key':ADZUNA_APP_KEY,'results_per_page':20,'what':query,'sort_by':'date'})
     url = f"{ADZUNA_URL.format(country=cc)}?{params}"
     try:
-        r = urllib.request.urlopen(url, timeout=15)
+        r = _urlopen(url, 15)
         hits = json.loads(r.read()).get('results',[])
         return [j for h in hits if (j := norm_adzuna(h, cc, city_hint=city_hint))]
     except Exception as e:
@@ -724,7 +1043,8 @@ def norm_reed(hit):
         'description':desc,'responsibilities':[],
         'skills_required':[s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have':[],
-        'hr_contact':{'name':f'{co} Talent Team','title':'Talent Acquisition','email':'','linkedin':f'https://www.linkedin.com/company/{li_co}/jobs/','phone':''},
+        'hr_contact':{'name':f'{co} Talent Team','title':'Talent Acquisition','email':'','linkedin':f'https://www.linkedin.com/company/{li_co}/jobs/','phone':extract_phone(desc)},
+        'has_phone': bool(extract_phone(desc)),
         'is_mnc':False,'company_size':'Not disclosed','company_size_category':'Unknown',
         'industry':'Analytics','category':infer_category(title),
         'work_mode':infer_work_mode(title,desc),'job_stability':3.8,
@@ -739,7 +1059,7 @@ def fetch_reed(keywords, location):
     params = urllib.parse.urlencode({'keywords':keywords,'locationName':location,'resultsToTake':50,'fullTime':'true'})
     try:
         req = urllib.request.Request(f"{REED_URL}?{params}", headers={'Authorization':f'Basic {creds}'})
-        r = urllib.request.urlopen(req, timeout=15)
+        r = _urlopen(req, 15)
         hits = json.loads(r.read()).get('results',[])
         return [j for h in hits if (j := norm_reed(h))]
     except Exception as e:
@@ -760,11 +1080,11 @@ def mark_jsearch_ran():
         json.dump({'date':str(date.today()),'ts':datetime.now().isoformat()}, f)
 
 def norm_jsearch(hit):
-    title = hit.get('job_title','Analytics Role'); co = hit.get('employer_name','Unknown')
-    desc = hit.get('job_description',''); city = hit.get('job_city','')
-    cc = hit.get('job_country','AE'); url = hit.get('job_apply_link','')
-    pub = hit.get('job_publisher','Indeed'); ts = hit.get('job_posted_at_timestamp',0)
-    remote = hit.get('job_is_remote',False)
+    title = hit.get('job_title') or 'Analytics Role'; co = hit.get('employer_name') or 'Unknown'
+    desc = hit.get('job_description') or ''; city = hit.get('job_city') or ''
+    cc = hit.get('job_country') or 'AE'; url = hit.get('job_apply_link') or ''
+    pub = hit.get('job_publisher') or 'Indeed'; ts = hit.get('job_posted_at_timestamp') or 0
+    remote = hit.get('job_is_remote') or False
     lo = hit.get('job_min_salary') or 0; hi = hit.get('job_max_salary') or 0
     per = hit.get('job_salary_period') or 'YEAR'; cur = hit.get('job_salary_currency') or ''
     if per == 'MONTH': lo,hi = lo*12,hi*12
@@ -774,6 +1094,11 @@ def norm_jsearch(hit):
     if is_spam(title, desc, co): return None
     cname = COUNTRY_NAME.get(cc) or COUNTRY_NAME.get(cc.lower()) or COUNTRY_NAME.get(cc.upper()) or cc
     if not cname or len(cname) <= 2: cname = 'Unknown'
+    # Default city by country code when JSearch returns blank city
+    DEFAULT_CITY = {'AE':'Dubai','SA':'Riyadh','QA':'Doha','KW':'Kuwait City',
+                    'BH':'Manama','OM':'Muscat','SG':'Singapore','IN':'India','GB':'London',
+                    'DE':'Germany','AU':'Australia','CA':'Canada'}
+    city = city or DEFAULT_CITY.get(cc.upper(), '')
     li_co = co.lower().replace(' ','-').replace('.','').replace(',','')
     exp_label, exp_min = infer_experience(title, desc)
     return {
@@ -787,7 +1112,8 @@ def norm_jsearch(hit):
         'description':desc[:1000],'responsibilities':hit.get('job_highlights',{}).get('Responsibilities',[])[:6],
         'skills_required':(hit.get('job_required_skills') or [])[:8] or [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have':[],
-        'hr_contact':{'name':f'{co} Recruiter','title':'Talent Acquisition','email':'','linkedin':f'https://www.linkedin.com/company/{li_co}/jobs/','phone':''},
+        'hr_contact':{'name':f'{co} Recruiter','title':'Talent Acquisition','email':'','linkedin':f'https://www.linkedin.com/company/{li_co}/jobs/','phone':extract_phone(desc)},
+        'has_phone': bool(extract_phone(desc)),
         'is_mnc':True,'company_size':'Not disclosed','company_size_category':'Unknown',
         'industry':'Analytics','category':infer_category(title),
         'work_mode':infer_work_mode(title,desc,remote),'job_stability':4.0,
@@ -802,12 +1128,13 @@ def fetch_jsearch(query, cc):
     try:
         req = urllib.request.Request(f"{JSEARCH_URL}?{params}", headers={
             'x-rapidapi-host':'jsearch.p.rapidapi.com','x-rapidapi-key':JSEARCH_KEY,'Content-Type':'application/json'})
-        r = urllib.request.urlopen(req, timeout=15)
+        r = _urlopen(req, 15)
         d = json.loads(r.read())
         if d.get('status') != 'OK': print(f"    ✗ JSearch '{query}': {d.get('status')}"); return []
         return [j for h in d.get('data',[]) if (j := norm_jsearch(h))]
     except Exception as e:
         err = str(e)
+        if '429' in err: return None   # signal quota exhausted to caller
         if '403' in err: print(f"    ✗ JSearch: API key not subscribed")
         else: print(f"    ✗ JSearch '{query}': {e}")
         return []
@@ -852,7 +1179,8 @@ def norm_remoteok(hit):
         'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have': [],
         'hr_contact': {'name': f'{co} Hiring', 'title': 'Talent Acquisition', 'email': '',
-                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': ''},
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': extract_phone(desc)},
+        'has_phone': bool(extract_phone(desc)),
         'is_mnc': False, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
         'industry': 'Analytics', 'category': infer_category(title),
         'work_mode': 'WFH', 'job_stability': 3.8,
@@ -867,7 +1195,7 @@ def fetch_remoteok():
     print("  Fetching RemoteOK …", end='', flush=True)
     try:
         req = urllib.request.Request(REMOTEOK_URL, headers={'User-Agent': 'EasyJobs/1.0'})
-        r   = urllib.request.urlopen(req, timeout=20)
+        r   = _urlopen(req, 20)
         raw = json.loads(r.read())
         # first element is a meta-info dict, skip it
         hits = [h for h in raw if isinstance(h, dict) and h.get('position')]
@@ -880,7 +1208,8 @@ def fetch_remoteok():
 # ── 5. ARBEITNOW (free, no auth — Europe-focused) ─────────────────────────────
 ARBEITNOW_URL  = 'https://www.arbeitnow.com/api/job-board-api'
 ARBEITNOW_TAGS = ['analytics','data','business-intelligence','marketing','operations','backend','python',
-                  'sales','hr','finance','product','crm','ecommerce','retail']
+                  'sales','hr','finance','product','crm','ecommerce','retail',
+                  'electrician','plumber','carpenter','welder','maintenance','hvac','mechanic']
 
 def norm_arbeitnow(hit):
     title  = (hit.get('title') or '').strip()
@@ -910,7 +1239,8 @@ def norm_arbeitnow(hit):
         'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have': [],
         'hr_contact': {'name': f'{co} Hiring', 'title': 'Talent Acquisition', 'email': '',
-                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': ''},
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': extract_phone(desc)},
+        'has_phone': bool(extract_phone(desc)),
         'is_mnc': False, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
         'industry': 'Analytics', 'category': infer_category(title),
         'work_mode': wm, 'job_stability': 3.8,
@@ -929,7 +1259,7 @@ def fetch_arbeitnow():
             params = urllib.parse.urlencode({'tags': tag})
             req    = urllib.request.Request(f"{ARBEITNOW_URL}?{params}",
                                             headers={'User-Agent': 'EasyJobs/1.0'})
-            r      = urllib.request.urlopen(req, timeout=15)
+            r      = _urlopen(req, 15)
             hits   = json.loads(r.read()).get('data', [])
             normed = [j for h in hits if (j := norm_arbeitnow(h))]
             jobs_all.extend(normed)
@@ -939,7 +1269,227 @@ def fetch_arbeitnow():
         time.sleep(0.3)
     return jobs_all
 
-# ── 6. APIFY (LinkedIn + Google Jobs) ────────────────────────────────────────
+# ── 6. REMOTIVE (free, no auth — remote jobs worldwide) ──────────────────────
+REMOTIVE_URL        = 'https://remotive.com/api/remote-jobs'
+REMOTIVE_CATEGORIES = ['data', 'marketing', 'business', 'finance', 'management', 'hr', 'sales']
+
+def norm_remotive(hit):
+    title   = (hit.get('title') or '').strip()
+    co      = (hit.get('company_name') or 'Unknown').strip()
+    desc    = strip_html((hit.get('description') or '').strip())
+    url     = (hit.get('url') or '').strip()
+    sal_raw = hit.get('salary') or ''
+    pub     = hit.get('publication_date') or ''
+
+    if not title or is_spam(title, desc, co): return None
+
+    sal_loc, sal_inr, sal_usd = _extract_salary(sal_raw, 'us') if sal_raw else ('Not disclosed', 'Not disclosed', 0)
+    exp_label, exp_min = infer_experience(title, desc)
+    li_co = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    pda = days_ago_from_iso(pub) if pub else 0
+
+    return {
+        'id': f"rm_{abs(hash(url+title+co))}", 'title': title, 'position_name': title, 'company': co,
+        'company_website': hit.get('company_url', url), 'company_address': 'Remote',
+        'location': 'Remote', 'city': 'Remote', 'country': 'USA',
+        'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
+        'posted_date': pub[:10] if pub else '', 'posted_days_ago': pda,
+        'job_type': 'Full-time', 'experience_required': exp_label, 'experience_min': exp_min,
+        'description': desc[:1000], 'responsibilities': [],
+        'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
+        'nice_to_have': [],
+        'hr_contact': {'name': f'{co} Hiring', 'title': 'Talent Acquisition', 'email': '',
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': extract_phone(desc)},
+        'has_phone': bool(extract_phone(desc)),
+        'is_mnc': False, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
+        'industry': 'Tech', 'category': infer_category(title),
+        'work_mode': 'WFH', 'job_stability': 3.8,
+        'glassdoor_rating': 3.8, 'glassdoor_reviews': 0,
+        'apply_url': url, 'source': 'Remotive', 'tags': ['Remote', 'USA'],
+        'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
+        'fit_score': calc_fit(desc, title),
+    }
+
+def fetch_remotive():
+    """Fetch jobs from Remotive (free API, no key needed) — remote jobs worldwide."""
+    jobs_all = []
+    for cat in REMOTIVE_CATEGORIES:
+        print(f"  [{cat}] …", end='', flush=True)
+        try:
+            params = urllib.parse.urlencode({'category': cat, 'limit': 50})
+            req    = urllib.request.Request(f"{REMOTIVE_URL}?{params}",
+                                            headers={'User-Agent': 'EasyJobs/1.0'})
+            r      = _urlopen(req, 15)
+            hits   = json.loads(r.read()).get('jobs', [])
+            normed = [j for h in hits if (j := norm_remotive(h))]
+            jobs_all.extend(normed)
+            print(f" {len(normed)}")
+        except Exception as e:
+            print(f"\n    ✗ Remotive [{cat}]: {e}")
+        time.sleep(0.3)
+    return jobs_all
+
+# ── 7. JOBICY (free, no auth — remote jobs worldwide) ─────────────────────────
+JOBICY_URL  = 'https://jobicy.com/api/v2/remote-jobs'
+JOBICY_TAGS = ['analytics', 'marketing', 'finance', 'sales',
+               'operations', 'product', 'recruiting', 'management']
+
+def norm_jobicy(hit):
+    title   = (hit.get('jobTitle') or '').strip()
+    co      = (hit.get('companyName') or 'Unknown').strip()
+    desc    = strip_html((hit.get('jobDescription') or '').strip())
+    url     = (hit.get('url') or '').strip()
+    sal_lo  = int(hit.get('annualSalaryMin') or 0)
+    sal_hi  = int(hit.get('annualSalaryMax') or 0)
+    pub     = hit.get('pubDate') or ''
+    geo     = hit.get('jobGeo') or 'Worldwide'
+
+    if not title or is_spam(title, desc, co): return None
+
+    cc      = _guess_country(geo) or 'us'
+    cname   = COUNTRY_NAME.get(cc, 'USA')
+    sal_loc, sal_inr, sal_usd = fmt_salary(sal_lo, sal_hi, cc)
+    exp_label, exp_min = infer_experience(title, desc)
+    li_co   = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    pda     = days_ago_from_iso(pub) if pub else 0
+
+    return {
+        'id': f"jy_{abs(hash(url+title+co))}", 'title': title, 'position_name': title, 'company': co,
+        'company_website': url, 'company_address': geo,
+        'location': geo, 'city': geo, 'country': cname,
+        'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
+        'posted_date': pub[:10] if pub else '', 'posted_days_ago': pda,
+        'job_type': (hit.get('jobType') or 'Full-time'),
+        'experience_required': exp_label, 'experience_min': exp_min,
+        'description': desc[:1000], 'responsibilities': [],
+        'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
+        'nice_to_have': [],
+        'hr_contact': {'name': f'{co} Hiring', 'title': 'Talent Acquisition', 'email': '',
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': extract_phone(desc)},
+        'has_phone': bool(extract_phone(desc)),
+        'is_mnc': False, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
+        'industry': 'Tech', 'category': infer_category(title),
+        'work_mode': 'WFH', 'job_stability': 3.8,
+        'glassdoor_rating': 3.8, 'glassdoor_reviews': 0,
+        'apply_url': url, 'source': 'Jobicy', 'tags': ['Remote', cname],
+        'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
+        'fit_score': calc_fit(desc, title),
+    }
+
+def fetch_jobicy():
+    """Fetch jobs from Jobicy (free API, no key needed) — remote jobs worldwide."""
+    jobs_all = []
+    for tag in JOBICY_TAGS:
+        print(f"  [{tag}] …", end='', flush=True)
+        try:
+            params = urllib.parse.urlencode({'count': 50, 'tag': tag})
+            req    = urllib.request.Request(f"{JOBICY_URL}?{params}",
+                                            headers={'User-Agent': 'EasyJobs/1.0'})
+            r      = _urlopen(req, 15)
+            hits   = json.loads(r.read()).get('jobs', [])
+            normed = [j for h in hits if (j := norm_jobicy(h))]
+            jobs_all.extend(normed)
+            print(f" {len(normed)}")
+        except Exception as e:
+            print(f"\n    ✗ Jobicy [{tag}]: {e}")
+        time.sleep(0.5)
+    return jobs_all
+
+# ── 8. HIMALAYAS (free, no auth — remote jobs with salary data) ───────────────
+HIMALAYAS_URL  = 'https://himalayas.app/jobs/api'
+HIMALAYAS_CATS = ['analytics','marketing','finance','operations','product',
+                  'sales','human-resources','business-development']
+
+def _parse_list_field(val):
+    """Parse a stringified Python list like \"['Senior', 'Mid']\" → list."""
+    if not val: return []
+    if isinstance(val, list): return val
+    try:
+        import ast
+        return ast.literal_eval(str(val))
+    except Exception:
+        return [str(val).strip("[]'\" ")]
+
+def _himalayas_currency_cc(currency):
+    mapping = {'USD':'us','GBP':'gb','EUR':'de','AUD':'au','CAD':'ca',
+               'SGD':'sg','CHF':'ch','AED':'AE','INR':'in','HKD':'HK'}
+    return mapping.get((currency or '').upper(), 'us')
+
+def norm_himalayas(hit):
+    title    = (hit.get('title') or '').strip()
+    co       = (hit.get('companyName') or 'Unknown').strip()
+    desc     = strip_html((hit.get('description') or hit.get('excerpt') or '').strip())
+    url      = (hit.get('applicationLink') or hit.get('guid') or '').strip()
+    sal_lo   = int(hit.get('minSalary') or 0)
+    sal_hi   = int(hit.get('maxSalary') or 0)
+    currency = (hit.get('currency') or 'USD').upper()
+    pub_ts   = hit.get('pubDate') or 0
+    locs     = _parse_list_field(hit.get('locationRestrictions'))
+    job_type = (hit.get('employmentType') or 'Full Time').replace('_', ' ').title()
+
+    if not title or is_spam(title, desc, co): return None
+
+    cc     = _himalayas_currency_cc(currency)
+    cname  = COUNTRY_NAME.get(cc, 'USA')
+    # Use location restriction as location label
+    loc_label = locs[0] if locs else 'Remote'
+    if loc_label.lower() in ('worldwide', 'anywhere', ''): loc_label = 'Remote'
+
+    sal_loc, sal_inr, sal_usd = fmt_salary(sal_lo, sal_hi, cc)
+    exp_label, exp_min = infer_experience(title, desc)
+    li_co  = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    pda    = days_ago_from_ts(pub_ts) if pub_ts else 0
+
+    return {
+        'id': f"hm_{abs(hash(url+title+co))}", 'title': title, 'position_name': title, 'company': co,
+        'company_website': f'https://himalayas.app/companies/{hit.get("companySlug","")}',
+        'company_address': loc_label,
+        'location': loc_label, 'city': loc_label, 'country': cname,
+        'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
+        'posted_date': '', 'posted_days_ago': pda,
+        'job_type': job_type,
+        'experience_required': exp_label, 'experience_min': exp_min,
+        'description': desc[:1000], 'responsibilities': [],
+        'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
+        'nice_to_have': [],
+        'hr_contact': {'name': f'{co} Hiring', 'title': 'Talent Acquisition', 'email': '',
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': extract_phone(desc)},
+        'has_phone': bool(extract_phone(desc)),
+        'is_mnc': False, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
+        'industry': 'Tech', 'category': infer_category(title),
+        'work_mode': 'WFH', 'job_stability': 3.8,
+        'glassdoor_rating': 3.8, 'glassdoor_reviews': 0,
+        'apply_url': url, 'source': 'Himalayas', 'tags': ['Remote', cname],
+        'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
+        'fit_score': calc_fit(desc, title),
+    }
+
+def fetch_himalayas():
+    """Fetch jobs from Himalayas (free API, no key needed) — remote jobs with salary."""
+    jobs_all = []
+    for cat in HIMALAYAS_CATS:
+        print(f"  [{cat}] …", end='', flush=True)
+        cat_jobs = []
+        for offset in [0, 20, 40]:   # up to 60 jobs per category
+            try:
+                params = urllib.parse.urlencode({'limit': 20, 'offset': offset, 'categories': cat})
+                req    = urllib.request.Request(f"{HIMALAYAS_URL}?{params}",
+                                                headers={'User-Agent': 'EasyJobs/1.0',
+                                                         'Accept': 'application/json'})
+                r      = _urlopen(req, 15)
+                hits   = json.loads(r.read()).get('jobs', [])
+                if not hits: break
+                normed = [j for h in hits if (j := norm_himalayas(h))]
+                cat_jobs.extend(normed)
+                if len(hits) < 20: break   # last page
+            except Exception as e:
+                print(f"\n    ✗ Himalayas [{cat}] offset={offset}: {e}"); break
+            time.sleep(0.2)
+        jobs_all.extend(cat_jobs)
+        print(f" {len(cat_jobs)}")
+    return jobs_all
+
+# ── 9. APIFY (OPTIONAL — costs money, skip if not needed) ────────────────────
 
 def run_apify_actor(actor_id, input_data, timeout=120):
     """Run an Apify actor synchronously and return dataset items as a list.
@@ -955,7 +1505,7 @@ def run_apify_actor(actor_id, input_data, timeout=120):
     try:
         req = urllib.request.Request(url, data=body,
               headers={'Content-Type': 'application/json'}, method='POST')
-        r = urllib.request.urlopen(req, timeout=timeout + 30)
+        r = _urlopen(req, timeout + 30)
         return json.loads(r.read())
     except Exception as e:
         print(f"    ✗ Apify [{actor_id}]: {e}")
@@ -1068,7 +1618,8 @@ def norm_linkedin(hit, fallback_cc='AE'):
         'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have': [],
         'hr_contact': {'name': f'{co} Recruiter', 'title': 'Talent Acquisition', 'email': '',
-                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': ''},
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': extract_phone(desc)},
+        'has_phone': bool(extract_phone(desc)),
         'is_mnc': True, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
         'industry': 'Analytics', 'category': infer_category(title),
         'work_mode': wm, 'job_stability': 4.2,
@@ -1077,6 +1628,206 @@ def norm_linkedin(hit, fallback_cc='AE'):
         'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
         'fit_score': calc_fit(desc, title),
     }
+
+# ── JobSpy blue collar searches ──────────────────────────────────────────────
+JOBSPY_BC_SEARCHES = [
+    # UAE / Dubai
+    ('electrician job', 'Dubai',      'united arab emirates'),
+    ('plumber job',     'Dubai',      'united arab emirates'),
+    ('driver job',      'Dubai',      'united arab emirates'),
+    ('ac technician',   'Dubai',      'united arab emirates'),
+    ('carpenter job',   'Dubai',      'united arab emirates'),
+    ('welder job',      'Dubai',      'united arab emirates'),
+    ('hvac technician', 'Dubai',      'united arab emirates'),
+    ('mechanic job',    'Dubai',      'united arab emirates'),
+    ('maintenance technician','Dubai','united arab emirates'),
+    ('tailor job',      'Dubai',      'united arab emirates'),
+    ('mason job',       'Dubai',      'united arab emirates'),
+    # UAE Abu Dhabi
+    ('electrician job', 'Abu Dhabi',  'united arab emirates'),
+    ('driver job',      'Abu Dhabi',  'united arab emirates'),
+    ('plumber job',     'Abu Dhabi',  'united arab emirates'),
+    ('ac technician',   'Abu Dhabi',  'united arab emirates'),
+    ('mechanic job',    'Abu Dhabi',  'united arab emirates'),
+    # Saudi Arabia
+    ('electrician job', 'Riyadh',     'saudi arabia'),
+    ('driver job',      'Riyadh',     'saudi arabia'),
+    ('plumber job',     'Riyadh',     'saudi arabia'),
+    ('ac technician',   'Riyadh',     'saudi arabia'),
+    ('welder job',      'Riyadh',     'saudi arabia'),
+    ('carpenter job',   'Riyadh',     'saudi arabia'),
+    ('electrician job', 'Jeddah',     'saudi arabia'),
+    ('driver job',      'Jeddah',     'saudi arabia'),
+    ('maintenance technician','Jeddah','saudi arabia'),
+    # Qatar
+    ('electrician job', 'Doha',       'qatar'),
+    ('driver job',      'Doha',       'qatar'),
+    ('plumber job',     'Doha',       'qatar'),
+    ('welder job',      'Doha',       'qatar'),
+    ('ac technician',   'Doha',       'qatar'),
+    ('carpenter job',   'Doha',       'qatar'),
+    # Kuwait
+    ('electrician job', 'Kuwait City','kuwait'),
+    ('driver job',      'Kuwait City','kuwait'),
+    ('plumber job',     'Kuwait City','kuwait'),
+    ('maintenance technician','Kuwait City','kuwait'),
+    # Oman
+    ('electrician job', 'Muscat',     'oman'),
+    ('driver job',      'Muscat',     'oman'),
+    ('plumber job',     'Muscat',     'oman'),
+    # Bahrain
+    ('electrician job', 'Manama',     'bahrain'),
+    ('driver job',      'Manama',     'bahrain'),
+    ('maintenance technician','Manama','bahrain'),
+    # India — Mumbai
+    ('electrician job', 'Mumbai',     'india'),
+    ('driver job',      'Mumbai',     'india'),
+    ('plumber job',     'Mumbai',     'india'),
+    ('ac technician',   'Mumbai',     'india'),
+    ('welder job',      'Mumbai',     'india'),
+    ('mechanic job',    'Mumbai',     'india'),
+    # India — Delhi
+    ('electrician job', 'Delhi',      'india'),
+    ('driver job',      'Delhi',      'india'),
+    ('plumber job',     'Delhi',      'india'),
+    ('welder job',      'Delhi',      'india'),
+    ('carpenter job',   'Delhi',      'india'),
+    ('mechanic job',    'Delhi',      'india'),
+    # India — Bangalore
+    ('electrician job', 'Bangalore',  'india'),
+    ('driver job',      'Bangalore',  'india'),
+    ('welder job',      'Bangalore',  'india'),
+    ('maintenance technician','Bangalore','india'),
+    # India — Chennai
+    ('electrician job', 'Chennai',    'india'),
+    ('driver job',      'Chennai',    'india'),
+    ('welder job',      'Chennai',    'india'),
+    ('tailor job',      'Chennai',    'india'),
+    # India — Hyderabad
+    ('electrician job', 'Hyderabad',  'india'),
+    ('driver job',      'Hyderabad',  'india'),
+    ('ac technician',   'Hyderabad',  'india'),
+    # India — Pune / Ahmedabad / Surat
+    ('electrician job', 'Pune',       'india'),
+    ('driver job',      'Pune',       'india'),
+    ('tailor job',      'Ahmedabad',  'india'),
+    ('cutting master',  'Ahmedabad',  'india'),
+    ('electrician job', 'Ahmedabad',  'india'),
+    ('tailor job',      'Surat',      'india'),
+    ('cutting master',  'Surat',      'india'),
+    # India — General (catchall)
+    ('driver job',      'India',      'india'),
+    ('electrician job', 'India',      'india'),
+    ('hvac technician', 'India',      'india'),
+    ('carpenter job',   'India',      'india'),
+    # UK blue collar
+    ('electrician job', 'London',     'uk'),
+    ('plumber job',     'London',     'uk'),
+    ('hvac engineer',   'London',     'uk'),
+    ('mechanic job',    'Birmingham', 'uk'),
+    ('electrician job', 'Manchester', 'uk'),
+    ('carpenter job',   'London',     'uk'),
+    # Australia blue collar
+    ('electrician job', 'Sydney',     'australia'),
+    ('plumber job',     'Melbourne',  'australia'),
+    ('welder job',      'Brisbane',   'australia'),
+    ('hvac technician', 'Sydney',     'australia'),
+    ('mechanic job',    'Perth',      'australia'),
+    ('carpenter job',   'Melbourne',  'australia'),
+]
+
+CC_MAP_JOBSPY = {
+    'united arab emirates': 'AE', 'saudi arabia': 'SA', 'qatar': 'QA',
+    'kuwait': 'KW', 'oman': 'OM', 'bahrain': 'BH',
+    'india': 'IN', 'uk': 'GB', 'united kingdom': 'GB',
+    'australia': 'AU', 'canada': 'CA', 'germany': 'DE',
+    'singapore': 'SG', 'usa': 'US',
+}
+
+def fetch_jobspy():
+    """Scrape Indeed blue collar jobs via JobSpy (no API key, Python 3.11+)."""
+    if not JOBSPY_OK:
+        print("  Skipped (python-jobspy not installed — run: pip install python-jobspy)")
+        return []
+
+    import warnings
+    warnings.filterwarnings('ignore')
+
+    results = []
+    seen_urls = set()
+    for term, location, country in JOBSPY_BC_SEARCHES:
+        print(f"    {term} / {location} …", end='', flush=True)
+        try:
+            df = _jobspy_scrape(
+                site_name=['indeed'],
+                search_term=term,
+                location=location,
+                results_wanted=50,
+                hours_old=2160,       # 90 days
+                country_indeed=country,
+            )
+            if df is None or len(df) == 0:
+                print(" 0 jobs"); time.sleep(1.0); continue
+            cc = CC_MAP_JOBSPY.get(country.lower(), 'UN')
+            cname = COUNTRY_NAME.get(cc) or country.title()
+            count = 0
+            for _, row in df.iterrows():
+                url = str(row.get('job_url') or '')
+                if url in seen_urls: continue
+                seen_urls.add(url)
+                title  = str(row.get('title')   or '').strip()
+                co     = str(row.get('company') or '').strip() or 'Unknown'
+                desc   = str(row.get('description') or '').strip()
+                loc    = str(row.get('location')    or location).strip()
+                city   = loc.split(',')[0].strip() if ',' in loc else location
+                posted = str(row.get('date_posted') or '')[:10]
+
+                if is_spam(title, desc, co): continue
+                if not title or co == 'Unknown': continue
+
+                sal_min = float(row.get('min_amount') or 0)
+                sal_max = float(row.get('max_amount') or 0)
+                cur_raw = str(row.get('currency') or '')
+                cur_cc_map = {'AED':'AE','SAR':'SA','INR':'in','GBP':'gb','AUD':'au','USD':'USD','EUR':'de'}
+                sal_loc, sal_inr, sal_usd = fmt_salary(sal_min, sal_max, cur_cc_map.get(cur_raw, cc))
+
+                exp_label, exp_min_yr = infer_experience(title, desc)
+                phone = extract_phone(desc)
+                li_co = co.lower().replace(' ','-').replace('.','').replace(',','')
+
+                j = {
+                    'id': f"jspy_{abs(hash(url+title))}",
+                    'title': title, 'position_name': title, 'company': co,
+                    'company_website': str(row.get('company_url') or ''),
+                    'company_address': loc, 'location': loc,
+                    'city': city, 'country': cname,
+                    'salary_local': sal_loc, 'salary_inr_annual': sal_inr, 'salary_usd_annual': sal_usd,
+                    'posted_date': posted, 'posted_days_ago': days_ago_from_iso(posted+'T00:00:00') if posted else 0,
+                    'job_type': str(row.get('job_type') or 'Full-time').replace('fulltime','Full-time'),
+                    'experience_required': exp_label, 'experience_min': exp_min_yr,
+                    'description': desc[:1000], 'responsibilities': [],
+                    'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
+                    'nice_to_have': [],
+                    'hr_contact': {'name': f'{co} HR', 'title': 'Talent Acquisition',
+                                   'email': '', 'phone': phone,
+                                   'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/'},
+                    'has_phone': bool(phone),
+                    'is_mnc': False, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
+                    'industry': 'Trades', 'category': infer_category(title),
+                    'work_mode': infer_work_mode(title, desc, bool(row.get('is_remote'))),
+                    'job_stability': 4.0, 'glassdoor_rating': 0.0, 'glassdoor_reviews': 0,
+                    'apply_url': url, 'source': 'JobSpy/Indeed',
+                    'tags': [cname, 'Blue Collar'],
+                    'skills_match': [s.upper() for s in MY_SKILLS if s in desc.lower()][:6],
+                    'fit_score': calc_fit(desc, title),
+                }
+                results.append(j); count += 1
+            print(f" {count} jobs")
+        except Exception as e:
+            print(f" ✗ {e}")
+        time.sleep(1.5)  # be polite to Indeed
+
+    return results
 
 def fetch_apify_linkedin(queries_cc):
     """Fetch jobs via valig/linkedin-jobs-scraper Apify actor."""
@@ -1119,6 +1870,7 @@ def norm_google_jobs(hit, fallback_cc='us'):
     pda  = _parse_days_ago(pub) if pub else 0
     wm   = infer_work_mode(title, desc, wfh)
     li_co = co.lower().replace(' ', '-').replace('.', '').replace(',', '')
+    exp_label, exp_min = infer_experience(title, desc)
     return {
         'id': f"gj_{abs(hash(url+title+co))}", 'title': title, 'position_name': title, 'company': co,
         'company_website': url, 'company_address': loc,
@@ -1130,7 +1882,8 @@ def norm_google_jobs(hit, fallback_cc='us'):
         'skills_required': [s.upper() for s in MY_SKILLS if s in desc.lower()][:8],
         'nice_to_have': [],
         'hr_contact': {'name': f'{co} Recruiter', 'title': 'Talent Acquisition', 'email': '',
-                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': ''},
+                       'linkedin': f'https://www.linkedin.com/company/{li_co}/jobs/', 'phone': extract_phone(desc)},
+        'has_phone': bool(extract_phone(desc)),
         'is_mnc': True, 'company_size': 'Not disclosed', 'company_size_category': 'Unknown',
         'industry': 'Analytics', 'category': infer_category(title),
         'work_mode': wm, 'job_stability': 4.0,
@@ -1193,10 +1946,16 @@ def fetch_all_jobs():
     if jsearch_already_ran_today():
         print("  Skipped (already ran today — quota management)")
     else:
-        js_total = 0
+        js_total = 0; js_consec_429 = 0
         for query, cc in JSEARCH_SEARCHES:
+            if js_consec_429 >= 3:
+                print("  ⚠ JSearch quota exhausted (3 consecutive 429s) — skipping remaining")
+                break
             print(f"    {query} …", end='', flush=True)
             results = fetch_jsearch(query, cc)
+            if results is None:  # 429 signal
+                js_consec_429 += 1; print(f" 0 jobs (429)"); time.sleep(1.0); continue
+            js_consec_429 = 0
             add(results); js_total += len(results); print(f" {len(results)} jobs"); time.sleep(1.0)
         if js_total > 0: mark_jsearch_ran(); print(f"  JSearch total: {js_total} | marked as ran today")
 
@@ -1206,14 +1965,26 @@ def fetch_all_jobs():
     print("\n── Arbeitnow (free / Europe) ────────────────────────────────────")
     add(fetch_arbeitnow())
 
+    print("\n── Remotive (free / remote worldwide) ───────────────────────────")
+    add(fetch_remotive())
+
+    print("\n── Jobicy (free / remote worldwide) ─────────────────────────────")
+    add(fetch_jobicy())
+
+    print("\n── Himalayas (free / remote + salary) ───────────────────────────")
+    add(fetch_himalayas())
+
+    print("\n── JobSpy / Indeed (blue collar — Gulf + India + UK + AU) ──────")
+    add(fetch_jobspy())
+
     if APIFY_TOKEN:
-        print("\n── Apify – LinkedIn ─────────────────────────────────────────────")
+        print("\n── Apify – LinkedIn (optional / paid) ───────────────────────────")
         add(fetch_apify_linkedin(APIFY_LI_SEARCHES))
 
-        print("\n── Apify – Google Jobs ──────────────────────────────────────────")
+        print("\n── Apify – Google Jobs (optional / paid) ────────────────────────")
         add(fetch_apify_google_jobs(APIFY_GJ_SEARCHES))
     else:
-        print("\n── Apify skipped (APIFY_TOKEN not set) ──────────────────────────")
+        print("\n── Apify skipped (APIFY_TOKEN not set — not needed, all free sources active) ──")
 
     # Curated sample jobs intentionally excluded from live feed —
     # they are fictional showcase entries without real apply URLs.
@@ -1248,5 +2019,5 @@ if __name__ == '__main__':
     with open(ts_path, 'w') as f:
         apify_src = ' + Apify (LI+GJ)' if APIFY_TOKEN else ''
         json.dump({'timestamp':datetime.now(timezone.utc).isoformat(),'count':len(jobs),
-                   'source':f'Adzuna + Reed + JSearch + RemoteOK + Arbeitnow{apify_src} + Curated'}, f)
+                   'source':f'Adzuna + Reed + JSearch + RemoteOK + Arbeitnow + Remotive + Jobicy + Himalayas{apify_src}'}, f)
     print(f"\n  Saved → {out}")

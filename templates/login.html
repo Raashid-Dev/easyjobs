@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EasyJobs — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080e1a; --surface:#0e1726; --card:#111f35;
+  --border:#1a2d4a; --border2:#243d5e;
+  --teal:#14b8a6; --teal2:#0d9488;
+  --text:#f1f5f9; --muted:#94a3b8; --muted2:#64748b;
+  --red:#ef4444; --green:#22c55e;
+  --radius:14px;
+}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text)}
+body{display:flex;flex-direction:column;min-height:100vh}
+
+/* ── Header ── */
+.site-header{
+  height:60px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 28px;flex-shrink:0;position:relative;
+}
+.site-header::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--teal),#3b82f6,#f59e0b);
+}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.3px;text-decoration:none}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#6366f1,#3b82f6,#14b8a6);
+  border-radius:9px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 14px rgba(99,102,241,.35)}
+.logo-icon i{color:#fff;font-size:14px}
+.logo .easy{color:var(--text)}
+.logo .jobs{color:var(--teal)}
+
+/* ── Page body ── */
+.page-body{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 20px}
+
+/* ── Card ── */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:40px 36px;width:100%;max-width:420px;
+  box-shadow:0 24px 64px rgba(0,0,0,.5);
+}
+.card-title{text-align:center;margin-bottom:32px}
+.card-title h2{font-size:24px;font-weight:700}
+.card-title p{color:var(--muted);font-size:14px;margin-top:6px}
+
+/* ── Steps ── */
+.step{display:none}
+.step.active{display:block}
+
+/* ── Form elements ── */
+.field{margin-bottom:20px}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:7px}
+.input-wrap{position:relative}
+.prefix{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:14px;font-weight:600;pointer-events:none;
+  display:flex;align-items:center;gap:6px;
+}
+input[type=tel]{
+  width:100%;padding:13px 14px 13px 58px;
+  border:1.5px solid var(--border2);border-radius:10px;
+  background:var(--surface);color:var(--text);
+  font-size:16px;font-family:'Inter',sans-serif;
+  outline:none;transition:border-color .2s;
+}
+input[type=tel]:focus{border-color:var(--teal)}
+input[type=tel]::placeholder{color:var(--muted2)}
+
+/* ── T&C checkbox row ── */
+.tc-row{
+  display:flex;align-items:flex-start;gap:12px;
+  background:rgba(20,184,166,.05);
+  border:1px solid rgba(20,184,166,.18);
+  border-radius:10px;padding:14px;margin-bottom:20px;
+}
+.tc-row input[type=checkbox]{
+  width:17px;height:17px;min-width:17px;margin-top:1px;
+  accent-color:var(--teal);cursor:pointer;
+}
+.tc-row .tc-text{font-size:13px;color:var(--muted);line-height:1.6}
+.tc-row .tc-text a{color:var(--teal);text-decoration:underline;cursor:pointer}
+.tc-row .tc-text strong{color:var(--text)}
+
+/* ── Buttons ── */
+.btn{
+  width:100%;padding:13px 20px;border:none;border-radius:10px;
+  font-size:15px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;
+}
+.btn-primary{background:var(--teal);color:#000}
+.btn-primary:hover{background:var(--teal2);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* ── OTP grid ── */
+.otp-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:6px}
+.otp-digit{
+  width:100%;aspect-ratio:1;text-align:center;
+  font-size:22px;font-weight:700;font-family:'Inter',sans-serif;
+  border:2px solid var(--border2);border-radius:10px;
+  background:var(--surface);color:var(--text);
+  outline:none;transition:border-color .2s;
+}
+.otp-digit:focus{border-color:var(--teal);background:var(--bg)}
+
+/* ── Mobile display ── */
+.mobile-display{
+  background:var(--surface);border:1px solid var(--border2);border-radius:10px;
+  padding:13px 16px;display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:20px;
+}
+.mobile-display .num{font-weight:600;font-size:15px}
+.change-btn{font-size:13px;color:var(--teal);cursor:pointer;text-decoration:underline}
+
+/* ── Timer ── */
+.timer{text-align:center;font-size:13px;color:var(--muted);margin-top:14px}
+.timer span{color:var(--teal);font-weight:600}
+.resend-link{color:var(--teal);cursor:pointer;text-decoration:underline}
+
+/* ── Voice note ── */
+.voice-note{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  font-size:13px;color:var(--muted);margin-top:16px;
+}
+.voice-note i{color:var(--teal)}
+
+/* ── Messages ── */
+.msg{
+  padding:12px 14px;border-radius:10px;font-size:13px;
+  margin-bottom:18px;display:none;line-height:1.5;
+}
+.msg.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
+.msg.success{background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.25);color:#5eead4}
+
+/* ── Spinner ── */
+.spinner{
+  width:17px;height:17px;border:2.5px solid rgba(0,0,0,.25);
+  border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ══════════ T&C MODAL ══════════ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);
+  width:100%;max-width:700px;max-height:88vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 32px 80px rgba(0,0,0,.7);
+}
+.modal-header{
+  padding:22px 28px 18px;border-bottom:1px solid var(--border);flex-shrink:0;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+}
+.modal-header-text h3{font-size:17px;font-weight:700}
+.modal-header-text span{font-size:11px;color:var(--muted2);margin-top:3px;display:block}
+.modal-close{
+  background:none;border:none;color:var(--muted);font-size:22px;
+  cursor:pointer;padding:0 4px;line-height:1;transition:color .2s;flex-shrink:0;
+}
+.modal-close:hover{color:var(--text)}
+
+.modal-body{
+  padding:24px 28px;overflow-y:auto;flex:1;
+  font-size:14px;line-height:1.75;color:var(--muted);
+}
+.modal-body h4{
+  color:var(--text);font-size:14px;font-weight:700;
+  margin:24px 0 10px;display:flex;align-items:center;gap:8px;
+}
+.modal-body h4:first-child{margin-top:0}
+.modal-body h4::before{
+  content:'';width:3px;height:16px;background:var(--teal);
+  border-radius:2px;flex-shrink:0;
+}
+.modal-body p{margin-bottom:12px}
+.modal-body ul{padding-left:22px;margin-bottom:12px}
+.modal-body ul li{margin-bottom:7px}
+.modal-body strong{color:var(--text)}
+
+.warn-box{
+  background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);
+  border-radius:10px;padding:14px 18px;color:#fca5a5;margin:16px 0;
+}
+.warn-box .warn-title{
+  display:flex;align-items:center;gap:8px;
+  font-weight:700;font-size:14px;color:#f87171;margin-bottom:8px;
+}
+
+.info-box{
+  background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.2);
+  border-radius:10px;padding:14px 18px;margin:16px 0;
+}
+
+.modal-footer{
+  padding:16px 28px;border-top:1px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.modal-footer-note{font-size:12px;color:var(--muted2)}
+.modal-btns{display:flex;gap:10px}
+.btn-sm{
+  padding:9px 22px;border-radius:8px;font-size:14px;font-weight:600;
+  cursor:pointer;font-family:'Inter',sans-serif;border:none;transition:all .2s;
+}
+.btn-accept{background:var(--teal);color:#000}
+.btn-accept:hover{background:var(--teal2)}
+.btn-close-modal{background:var(--border);color:var(--muted)}
+.btn-close-modal:hover{background:var(--border2);color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="site-header">
+  <a href="/" class="logo">
+    <div class="logo-icon"><i class="fa fa-briefcase"></i></div>
+    <span><span class="easy">Easy</span><span class="jobs">Jobs</span></span>
+  </a>
+</header>
+
+<!-- ── Main ── -->
+<div class="page-body">
+  <div class="card">
+
+    <div class="card-title">
+      <h2>Welcome to EasyJobs</h2>
+      <p>Sign in or create a free account</p>
+    </div>
+
+    <div id="msg" class="msg"></div>
+
+    <!-- Step 1: Mobile + T&C -->
+    <div class="step active" id="step-mobile">
+
+      <div class="field">
+        <label>Mobile Number</label>
+        <div class="input-wrap">
+          <span class="prefix">🇮🇳 +91</span>
+          <input type="tel" id="mobile" maxlength="10"
+                 placeholder="10-digit mobile number" inputmode="numeric"
+                 oninput="this.value=this.value.replace(/\D/g,'')">
+        </div>
+      </div>
+
+      <div class="tc-row">
+        <input type="checkbox" id="tc-check" onchange="checkCanSend()">
+        <div class="tc-text">
+          I have read and agree to the
+          <a onclick="openTC(event)">Terms &amp; Conditions</a> &amp;
+          <a onclick="openTC(event)">Privacy Policy</a>.
+          I understand EasyJobs bears <strong>no liability</strong> for fraud,
+          scams, or financial loss, and I will not pay any upfront fee for a job.
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-send" onclick="sendOTP()" disabled>
+        <i class="fa fa-phone"></i> Get OTP
+      </button>
+
+      <div class="voice-note">
+        <i class="fa fa-phone-volume"></i>
+        You'll receive a <strong style="color:var(--text)">voice call</strong> with your OTP
+      </div>
+
+    </div><!-- /step-mobile -->
+
+    <!-- Step 2: OTP -->
+    <div class="step" id="step-otp">
+      <div class="mobile-display">
+        <span class="num" id="display-mobile">+91 XXXXXXXXXX</span>
+        <span class="change-btn" onclick="goBack()">Change</span>
+      </div>
+
+      <div class="field">
+        <label>Enter 6-digit OTP from the call</label>
+        <div class="otp-grid" id="otp-grid">
+          <input class="otp-digit" maxlength="1" inputmode="numeric" type="text">
+          <input class="otp-digit" maxlength="1" inputmode="numeric" type="text">
+          <input class="otp-digit" maxlength="1" inputmode="numeric" type="text">
+          <input class="otp-digit" maxlength="1" inputmode="numeric" type="text">
+          <input class="otp-digit" maxlength="1" inputmode="numeric" type="text">
+          <input class="otp-digit" maxlength="1" inputmode="numeric" type="text">
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-verify" onclick="verifyOTP()" disabled>
+        <i class="fa fa-check-circle"></i> Verify &amp; Sign In
+      </button>
+
+      <div class="timer" id="timer-wrap">
+        Call again in <span id="countdown">30</span>s
+      </div>
+      <div class="timer" id="resend-wrap" style="display:none">
+        Didn't receive?
+        <span class="resend-link" onclick="resendOTP()">Call again</span>
+      </div>
+    </div><!-- /step-otp -->
+
+  </div><!-- /card -->
+</div><!-- /page-body -->
+
+
+<!-- ══════════════ T&C MODAL ══════════════ -->
+<div class="modal-overlay" id="tc-modal">
+  <div class="modal">
+
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <h3>Terms &amp; Conditions — EasyJobs Platform</h3>
+        <span>Effective May 2026 &nbsp;·&nbsp; Applicable under Indian &amp; GCC Laws</span>
+      </div>
+      <button class="modal-close" onclick="closeTC()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+
+      <h4>1. About EasyJobs</h4>
+      <p>EasyJobs ("Platform", "we", "us", "our") is a <strong>job discovery and aggregation service</strong> that collects and displays job listings from public job boards, third-party APIs, and employer submissions. EasyJobs is <strong>not</strong> a recruitment agency, staffing firm, visa consultant, or employment intermediary of any kind.</p>
+      <p>We do not verify, screen, endorse, or guarantee the accuracy, legitimacy, or availability of any job listing displayed on this Platform.</p>
+
+      <h4>2. User Responsibilities &amp; Due Diligence</h4>
+      <p>By using EasyJobs, you explicitly agree and acknowledge that:</p>
+      <ul>
+        <li>You will <strong>independently verify</strong> the authenticity and legitimacy of any job listing, employer, or agency before taking any action.</li>
+        <li>You are solely responsible for all decisions, actions, and consequences arising from your use of the Platform.</li>
+        <li>You will research and verify employers, agencies, and job offers through official channels before sharing personal documents or attending interviews.</li>
+        <li>You will not hold EasyJobs responsible for any outcome — positive or negative — arising from job applications or contacts made through this Platform.</li>
+      </ul>
+
+      <div class="warn-box">
+        <div class="warn-title"><i class="fa fa-triangle-exclamation"></i> IMPORTANT — Fraud &amp; Scam Warning</div>
+        <p style="margin:0;line-height:1.7">
+          <strong>Legitimate employers and registered recruitment agencies NEVER ask for upfront fees,</strong> registration charges, processing fees, security deposits, visa fees, or any payment of any kind as a condition of employment or interview.<br><br>
+          If any person, agency, or employer demands money in exchange for a job offer, interview slot, or visa processing — it is a <strong>SCAM</strong>. Do NOT pay. Report it to local authorities immediately.<br><br>
+          <strong>EasyJobs bears absolutely zero responsibility or liability for any financial loss, fraud, deception, or harm suffered by users through jobs found on this Platform.</strong>
+        </p>
+      </div>
+
+      <h4>3. No Guarantee of Employment or Accuracy</h4>
+      <p>EasyJobs makes <strong>no representations or warranties</strong> regarding:</p>
+      <ul>
+        <li>The accuracy, completeness, currency, or legitimacy of any job listing</li>
+        <li>Whether any listed vacancy is genuine, current, or still available</li>
+        <li>The outcome of any job application or interview process</li>
+        <li>The conduct, credibility, financial standing, or intentions of any employer or agent</li>
+        <li>Visa approvals, work permits, immigration outcomes, or relocation assistance</li>
+        <li>Salary, benefits, or working conditions as described in any listing</li>
+      </ul>
+      <p>All job listings are displayed on an "as-is" and "as-available" basis without any warranty of any kind.</p>
+
+      <h4>4. Limitation of Liability</h4>
+      <p>To the fullest extent permitted under applicable law, EasyJobs, its founders, directors, employees, agents, and affiliates shall <strong>not be liable</strong> for any loss or damage whatsoever, including but not limited to:</p>
+      <ul>
+        <li>Financial loss, fraud, or monetary damage of any nature</li>
+        <li>Loss of employment opportunity, career prospects, or income</li>
+        <li>Identity theft, document misuse, or privacy breach caused by third parties</li>
+        <li>Harm arising from reliance on any job listing, employer claim, or agency representation</li>
+        <li>Indirect, incidental, consequential, punitive, or special damages</li>
+      </ul>
+      <p>Users access and use this Platform <strong>entirely at their own risk</strong>. EasyJobs's total liability in any matter shall not exceed ₹0 (zero).</p>
+
+      <h4>5. Data Collection, Storage &amp; Marketing Use</h4>
+      <div class="info-box">
+        <p style="margin:0;line-height:1.7">By registering on EasyJobs, you <strong>explicitly and freely consent</strong> to the following:</p>
+      </div>
+      <ul>
+        <li>Collection and storage of your personal data including: <strong>name, mobile number, age, gender, educational qualification, and city of residence.</strong></li>
+        <li>Use of your data for personalised job recommendations, platform analytics, product improvement, and internal business reporting.</li>
+        <li>Use of your data for <strong>marketing and promotional communications</strong> sent via SMS, WhatsApp, email, push notifications, and other channels.</li>
+        <li>Sharing of your data in anonymised or aggregated form with recruitment partners, advertisers, and analytics providers.</li>
+        <li>Retention of your data for as long as your account is active or as required by law.</li>
+      </ul>
+      <p>You may request deletion of your personal data by writing to <strong>support@easyjobs.in</strong>. Note that deletion may affect your ability to use the Platform.</p>
+
+      <h4>6. Prohibited Conduct</h4>
+      <ul>
+        <li>You shall not post, submit, or share false, misleading, or fraudulent information on the Platform.</li>
+        <li>You shall not use the Platform for any illegal, fraudulent, or harmful purpose.</li>
+        <li>You shall not misrepresent your identity, qualifications, experience, or employment status.</li>
+        <li>Automated scraping, crawling, or bulk data extraction from the Platform is strictly prohibited.</li>
+        <li>You shall not use the Platform to solicit, harass, or defraud other users or employers.</li>
+      </ul>
+
+      <h4>7. Governing Law &amp; Jurisdiction</h4>
+      <p><strong>India:</strong> These Terms are governed by the laws of the Republic of India, including the Information Technology Act, 2000; the Information Technology (Amendment) Act, 2008; the Consumer Protection Act, 2019; and the Digital Personal Data Protection Act, 2023. All disputes shall be subject to the exclusive jurisdiction of courts in India.</p>
+      <p><strong>UAE (United Arab Emirates):</strong> Users in the UAE acknowledge that EasyJobs is not registered as a recruitment or manpower agency under UAE Federal Law No. 6 of 1973 or its amendments. Access to the Platform from the UAE is at the user's sole discretion and risk. UAE's Federal Decree-Law No. 34 of 2021 on Combating Rumours and Cybercrime applies to user conduct.</p>
+      <p><strong>Saudi Arabia:</strong> EasyJobs is not licensed under the Saudi Labour Law or the Ministry of Human Resources and Social Development regulations. Users in KSA are governed by the Saudi Anti-Cybercrime Law (Royal Decree No. M/17).</p>
+      <p><strong>Other GCC Nations (Qatar, Kuwait, Bahrain, Oman):</strong> Users in GCC countries acknowledge they access this Platform voluntarily and in compliance with all applicable local laws. EasyJobs bears no responsibility for compliance with local labour, immigration, or cybercrime laws.</p>
+
+      <h4>8. Modifications to Terms</h4>
+      <p>EasyJobs reserves the right to modify, update, or replace these Terms at any time without prior notice. Continued use of the Platform following any change constitutes your acceptance of the updated Terms.</p>
+
+      <h4>9. Severability</h4>
+      <p>If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.</p>
+
+      <h4>10. Contact &amp; Grievance</h4>
+      <p>For queries, data deletion requests, or to report fraudulent listings:<br>
+      <strong>Email:</strong> support@easyjobs.in<br>
+      <strong>Grievance Officer (India):</strong> As required under the IT Act, 2000 — reachable at the above email.</p>
+
+    </div><!-- /modal-body -->
+
+    <div class="modal-footer">
+      <span class="modal-footer-note">Scroll up to review all terms before accepting</span>
+      <div class="modal-btns">
+        <button class="btn-sm btn-close-modal" onclick="closeTC()">Close</button>
+        <button class="btn-sm btn-accept" onclick="acceptTC()">
+          <i class="fa fa-check"></i> I Accept &amp; Agree
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /modal -->
+</div><!-- /modal-overlay -->
+
+
+<script>
+let currentMobile = '';
+let timerInterval = null;
+
+/* ── Helpers ── */
+function showMsg(text, type='error') {
+  const el = document.getElementById('msg');
+  el.innerHTML = text;
+  el.className = 'msg ' + type;
+  el.style.display = 'block';
+  if (type !== 'success') setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (loading) {
+    btn._txt = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span>';
+    btn.disabled = true;
+  } else {
+    if (btn._txt) btn.innerHTML = btn._txt;
+    checkCanSend();
+  }
+}
+function checkCanSend() {
+  const checked  = document.getElementById('tc-check').checked;
+  const hasNum   = document.getElementById('mobile').value.length === 10;
+  document.getElementById('btn-send').disabled = !(checked && hasNum);
+}
+
+/* ── T&C Modal ── */
+function openTC(e) { if(e) e.preventDefault(); document.getElementById('tc-modal').classList.add('show'); }
+function closeTC() { document.getElementById('tc-modal').classList.remove('show'); }
+function acceptTC() {
+  document.getElementById('tc-check').checked = true;
+  checkCanSend();
+  closeTC();
+  showMsg('<i class="fa fa-check-circle"></i> Terms accepted — enter your number to continue', 'success');
+}
+document.getElementById('tc-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeTC();
+});
+
+/* ── Step 1: Send OTP ── */
+async function sendOTP() {
+  const mobile = document.getElementById('mobile').value.trim();
+  if (mobile.length !== 10) { showMsg('Enter a valid 10-digit mobile number'); return; }
+  if (!document.getElementById('tc-check').checked) { showMsg('Please accept Terms & Conditions to continue'); return; }
+  setLoading('btn-send', true);
+  try {
+    const r = await fetch('/auth/send-otp', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ mobile })
+    });
+    const d = await r.json();
+    if (!d.ok) { showMsg(d.msg); setLoading('btn-send', false); return; }
+    currentMobile = mobile;
+    document.getElementById('display-mobile').textContent = '+91 ' + mobile;
+    document.getElementById('step-mobile').classList.remove('active');
+    document.getElementById('step-otp').classList.add('active');
+    startTimer(30);
+    document.querySelector('#otp-grid .otp-digit').focus();
+    showMsg('<i class="fa fa-phone-volume"></i> Calling +91 ' + mobile + '… answer to hear your OTP', 'success');
+  } catch(e) {
+    showMsg('Network error. Please try again.'); setLoading('btn-send', false);
+  }
+}
+
+/* ── OTP grid ── */
+document.querySelectorAll('.otp-digit').forEach((el, i, all) => {
+  el.addEventListener('input', () => {
+    el.value = el.value.replace(/\D/g,'').slice(-1);
+    if (el.value && i < all.length-1) all[i+1].focus();
+    checkOTPFilled();
+  });
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !el.value && i > 0) all[i-1].focus();
+  });
+  el.addEventListener('paste', e => {
+    e.preventDefault();
+    const txt = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'');
+    [...txt.slice(0,6)].forEach((ch,j) => { if(all[j]) all[j].value = ch; });
+    if (all[Math.min(txt.length,6)-1]) all[Math.min(txt.length,6)-1].focus();
+    checkOTPFilled();
+  });
+});
+function checkOTPFilled() {
+  document.getElementById('btn-verify').disabled =
+    ![...document.querySelectorAll('.otp-digit')].every(e => e.value);
+}
+function getOTPValue() {
+  return [...document.querySelectorAll('.otp-digit')].map(e => e.value).join('');
+}
+
+/* ── Step 2: Verify OTP ── */
+async function verifyOTP() {
+  const otp = getOTPValue();
+  if (otp.length !== 6) { showMsg('Enter all 6 digits'); return; }
+  setLoading('btn-verify', true);
+  try {
+    const r = await fetch('/auth/verify-otp', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ mobile: currentMobile, otp })
+    });
+    const d = await r.json();
+    if (!d.ok) {
+      showMsg(d.msg);
+      document.querySelectorAll('.otp-digit').forEach(e => e.value = '');
+      document.querySelector('#otp-grid .otp-digit').focus();
+      setLoading('btn-verify', false);
+      return;
+    }
+    showMsg('<i class="fa fa-check-circle"></i> Verified! Redirecting…', 'success');
+    setTimeout(() => { window.location.href = d.redirect; }, 800);
+  } catch(e) {
+    showMsg('Network error. Please try again.'); setLoading('btn-verify', false);
+  }
+}
+
+/* ── Timer ── */
+function startTimer(s) {
+  clearInterval(timerInterval);
+  document.getElementById('timer-wrap').style.display = 'block';
+  document.getElementById('resend-wrap').style.display = 'none';
+  let t = s;
+  document.getElementById('countdown').textContent = t;
+  timerInterval = setInterval(() => {
+    t--;
+    document.getElementById('countdown').textContent = t;
+    if (t <= 0) {
+      clearInterval(timerInterval);
+      document.getElementById('timer-wrap').style.display = 'none';
+      document.getElementById('resend-wrap').style.display = 'block';
+    }
+  }, 1000);
+}
+async function resendOTP() {
+  document.querySelectorAll('.otp-digit').forEach(e => e.value = '');
+  checkOTPFilled();
+  try {
+    const r = await fetch('/auth/send-otp', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ mobile: currentMobile })
+    });
+    const d = await r.json();
+    if (d.ok) { showMsg('<i class="fa fa-phone-volume"></i> Calling again…', 'success'); startTimer(30); }
+    else showMsg(d.msg);
+  } catch(e) { showMsg('Network error'); }
+}
+function goBack() {
+  clearInterval(timerInterval);
+  document.getElementById('step-otp').classList.remove('active');
+  document.getElementById('step-mobile').classList.add('active');
+  document.getElementById('msg').style.display = 'none';
+  checkCanSend();
+}
+
+/* Enter key */
+document.getElementById('mobile').addEventListener('input', checkCanSend);
+document.getElementById('mobile').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !document.getElementById('btn-send').disabled) sendOTP();
+});
+</script>
+</body>
+</html>

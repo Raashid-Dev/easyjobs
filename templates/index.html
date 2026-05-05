@@ -9,24 +9,55 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg:       #080e1a;
-      --surface:  #0e1726;
-      --card:     #111f35;
-      --border:   #1a2d4a;
-      --border2:  #243d5e;
-      --teal:     #14b8a6;
-      --teal2:    #0d9488;
-      --gold:     #f59e0b;
-      --blue:     #3b82f6;
-      --red:      #ef4444;
-      --green:    #22c55e;
-      --text:     #f1f5f9;
-      --muted:    #94a3b8;
-      --muted2:   #64748b;
-      --sidebar:  260px;
-      --detail:   520px;
-      --radius:   12px;
+    /* ── Dark theme (default) ───────────────────────────── */
+    :root, [data-theme="dark"] {
+      --bg:           #080e1a;
+      --surface:      #0e1726;
+      --card:         #111f35;
+      --border:       #1a2d4a;
+      --border2:      #243d5e;
+      --teal:         #14b8a6;
+      --teal2:        #0d9488;
+      --gold:         #f59e0b;
+      --blue:         #3b82f6;
+      --red:          #ef4444;
+      --green:        #22c55e;
+      --text:         #f1f5f9;
+      --muted:        #94a3b8;
+      --muted2:       #64748b;
+      --sidebar:      260px;
+      --detail:       520px;
+      --radius:       12px;
+      --header-bg:    linear-gradient(135deg,#0a1628 0%,#0e2040 50%,#091528 100%);
+      --chip-bg:      #1a2d4a;
+      --chip-hover:   #243d5e;
+      --input-bg:     #0e1726;
+      --scrollbar-bg: #111f35;
+      --shadow:       0 4px 24px rgba(0,0,0,.4);
+    }
+
+    /* ── Light theme ────────────────────────────────────── */
+    [data-theme="light"] {
+      --bg:           #f0f4f8;
+      --surface:      #e4ecf4;
+      --card:         #ffffff;
+      --border:       #c8d8e8;
+      --border2:      #a8c0d6;
+      --teal:         #0d9488;
+      --teal2:        #0f766e;
+      --gold:         #d97706;
+      --blue:         #2563eb;
+      --red:          #dc2626;
+      --green:        #16a34a;
+      --text:         #0f172a;
+      --muted:        #334155;
+      --muted2:       #64748b;
+      --header-bg:    linear-gradient(135deg,#1e3a5f 0%,#1e40af 50%,#1e3a5f 100%);
+      --chip-bg:      #dbe8f4;
+      --chip-hover:   #c8d8ec;
+      --input-bg:     #ffffff;
+      --scrollbar-bg: #e4ecf4;
+      --shadow:       0 4px 24px rgba(0,0,0,.1);
     }
 
     html, body { height: 100%; }
@@ -37,11 +68,12 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      transition: background .25s, color .25s;
     }
 
     /* ── Header ─────────────────────────────────────────── */
     header {
-      background: linear-gradient(135deg, #0a1628 0%, #0e2040 50%, #091528 100%);
+      background: var(--header-bg);
       border-bottom: 1px solid var(--border);
       padding: 0 24px;
       height: 64px;
@@ -353,6 +385,7 @@
     .ctag.wfh  { color: #6ee7b7; border-color: rgba(52,211,153,.35); background: rgba(52,211,153,.08); }
     .ctag.hot  { color: #f97316; border-color: rgba(249,115,22,.35); background: rgba(249,115,22,.08); }
     .ctag.cat  { color: #fde68a; border-color: rgba(253,230,138,.35); background: rgba(253,230,138,.06); }
+    .ctag.phone { color: #4ade80; border-color: rgba(74,222,128,.4); background: rgba(74,222,128,.1); font-weight: 600; }
 
     /* ── salary row ─────────────────────────────────────── */
     .card-salary {
@@ -564,6 +597,51 @@
       cursor: not-allowed !important;
       opacity: 0.5;
     }
+
+    /* ── Theme toggle ────────────────────────────────────── */
+    .theme-toggle-btn {
+      width: 36px; height: 36px;
+      padding: 0;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    /* ── Light theme overrides ───────────────────────────── */
+    [data-theme="light"] .sidebar { background: var(--surface); border-right-color: var(--border); }
+    [data-theme="light"] .jobs-panel { background: var(--bg); }
+    [data-theme="light"] .job-card { background: var(--card); border-color: var(--border); box-shadow: 0 1px 6px rgba(0,0,0,.08); }
+    [data-theme="light"] .job-card:hover { border-color: var(--teal); box-shadow: 0 4px 16px rgba(13,148,136,.15); }
+    [data-theme="light"] .job-card.selected { border-color: var(--teal); background: #f0fdf9; }
+    [data-theme="light"] .detail-panel { background: var(--card); border-left-color: var(--border); }
+    [data-theme="light"] .stat-bar { background: var(--surface); border-bottom-color: var(--border); }
+    [data-theme="light"] .stat-item { border-right-color: var(--border); }
+    [data-theme="light"] .filter-title { color: var(--muted); }
+    [data-theme="light"] .chip { background: var(--chip-bg); border-color: var(--border); color: var(--muted); }
+    [data-theme="light"] .chip:hover { border-color: var(--teal); color: var(--teal); background: var(--chip-hover); }
+    [data-theme="light"] .chip.active { background: rgba(13,148,136,.12); border-color: var(--teal); color: var(--teal); }
+    [data-theme="light"] .sort-select, [data-theme="light"] .sort-select-bar { background: var(--input-bg); color: var(--text); border-color: var(--border); }
+    [data-theme="light"] .search-wrap input { background: var(--input-bg); color: var(--text); border-color: var(--border); }
+    [data-theme="light"] .search-wrap input::placeholder { color: var(--muted2); }
+    [data-theme="light"] .search-wrap i { color: var(--muted2); }
+    [data-theme="light"] .hr-card { background: var(--surface); border-color: var(--border); }
+    [data-theme="light"] .dbadge { background: rgba(13,148,136,.1); color: var(--teal); border-color: rgba(13,148,136,.2); }
+    [data-theme="light"] .dbadge.sal { background: rgba(37,99,235,.08); color: var(--blue); border-color: rgba(37,99,235,.2); }
+    [data-theme="light"] .fit-bar-wrap { background: var(--surface); border-color: var(--border); }
+    [data-theme="light"] .detail-section { border-top-color: var(--border); }
+    [data-theme="light"] .detail-section-title { color: var(--muted2); }
+    [data-theme="light"] .card-title { color: var(--text); }
+    [data-theme="light"] .card-company { color: var(--muted); }
+    [data-theme="light"] .ctag { background: var(--chip-bg); color: var(--muted); }
+    [data-theme="light"] .icon-btn { background: var(--chip-bg); color: var(--muted); }
+    [data-theme="light"] .icon-btn:hover { background: rgba(13,148,136,.12); color: var(--teal); }
+    [data-theme="light"] .btn-outline { border-color: var(--border2); color: var(--muted); }
+    [data-theme="light"] .btn-outline:hover { border-color: var(--teal); color: var(--teal); }
+    [data-theme="light"] .mobile-nav { background: var(--surface); border-top-color: var(--border); }
+    [data-theme="light"] .mfb-sort { background: var(--input-bg); color: var(--text); border-color: var(--border); }
+    [data-theme="light"] ::-webkit-scrollbar-track { background: var(--scrollbar-bg); }
+    [data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--border2); }
 
     /* ── Empty / Loading states ─────────────────────────── */
     .empty-state {
@@ -802,6 +880,53 @@
       <i class="fa fa-clock"></i> <span id="lastFedText">Last fed: –</span>
     </div>
     <div class="badge-live" id="liveIndicator">Sample Data</div>
+    <button class="btn btn-outline theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Switch theme">
+      <i class="fa fa-moon" id="themeIcon"></i>
+    </button>
+    {% if user %}
+    <div class="user-menu" style="position:relative">
+      <button class="btn btn-outline" id="userMenuBtn" onclick="toggleUserMenu()"
+              style="display:flex;align-items:center;gap:7px;padding:7px 14px">
+        <span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);
+          display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">
+          {{ (user.name or user.mobile)[0].upper() }}
+        </span>
+        <span style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px">
+          {{ user.name or ('+' + user.mobile[-4:].rjust(10,'·')) }}
+        </span>
+        <i class="fa fa-chevron-down" style="font-size:10px"></i>
+      </button>
+      <div id="userDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 6px);
+          background:var(--surface);border:1px solid var(--border);border-radius:12px;
+          min-width:180px;z-index:999;padding:8px 0;box-shadow:0 8px 30px rgba(0,0,0,.4)">
+        <a href="/profile" style="display:flex;align-items:center;gap:10px;
+            padding:10px 16px;color:var(--text);text-decoration:none;font-size:14px">
+          <i class="fa fa-user" style="color:var(--accent);width:16px"></i> My Profile
+        </a>
+        {% if session.admin_key is defined %}
+        <a href="/admin" style="display:flex;align-items:center;gap:10px;
+            padding:10px 16px;color:var(--text);text-decoration:none;font-size:14px">
+          <i class="fa fa-chart-bar" style="color:var(--accent);width:16px"></i> Admin Dashboard
+        </a>
+        {% endif %}
+        <div style="height:1px;background:var(--border);margin:4px 0"></div>
+        <a href="/logout" style="display:flex;align-items:center;gap:10px;
+            padding:10px 16px;color:var(--muted);text-decoration:none;font-size:14px">
+          <i class="fa fa-sign-out-alt" style="width:16px"></i> Sign Out
+        </a>
+      </div>
+    </div>
+    {% else %}
+    <a href="/login" class="btn btn-outline" style="font-size:14px;text-decoration:none;
+        display:flex;align-items:center;gap:6px;padding:7px 16px">
+      <i class="fa fa-user"></i> Sign In
+    </a>
+    {% endif %}
+    <a href="/resume-builder" class="btn" style="background:linear-gradient(135deg,#6366f1,#14b8a6);
+        color:#fff;font-size:13px;font-weight:700;padding:8px 16px;gap:7px;text-decoration:none;
+        box-shadow:0 0 18px rgba(99,102,241,.35);white-space:nowrap">
+      <i class="fa fa-wand-magic-sparkles"></i> Try AI Resume Builder
+    </a>
     <button class="btn btn-outline" id="refreshBtn" onclick="refreshJobs()">
       <i class="fa fa-rotate"></i> Refresh Jobs
     </button>
@@ -974,6 +1099,18 @@
         <div class="chip" data-val="Digital Marketing" onclick="toggleChip(this,'category')">🌐 Digital Mktg</div>
         <div class="chip" data-val="Web Analytics" onclick="toggleChip(this,'category')">📡 Web Analytics</div>
         <div class="chip" data-val="E-commerce & Growth" onclick="toggleChip(this,'category')">📦 E-comm & Growth</div>
+        <div class="chip" data-val="Blue Collar" onclick="toggleChip(this,'category')">🔧 Blue Collar</div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-title">
+        Phone / Contact
+        <span class="clear-btn" onclick="clearFilter('hasphone')">Clear</span>
+      </div>
+      <div class="filter-chips" id="filter-hasphone">
+        <div class="chip active" data-val="all"      onclick="toggleChip(this,'hasphone')">All</div>
+        <div class="chip" data-val="phone"           onclick="toggleChip(this,'hasphone')">📞 Has Phone</div>
       </div>
     </div>
 
@@ -1073,18 +1210,58 @@
 let allJobs = [];
 let saved   = JSON.parse(localStorage.getItem('jr_saved') || '[]');
 
-const MY_SKILLS_LOWER = [
-  'ga4','google analytics','gtm','google tag manager','sql','bigquery',
-  'power bi','looker','looker studio','tableau','data visualization',
-  'analytics','business intelligence','digital analytics','web analytics',
-  'kpi','dashboard','reporting','retail analytics','campaign analytics',
-  'dax','crm analytics','rfm','clv','marketing analytics'
-];
+// Auth state injected from Flask session
+const USER_LOGGED_IN = {{ 'true' if session and session.get('user_id') else 'false' }};
+
+// User menu dropdown toggle
+function toggleUserMenu() {
+  const drop = document.getElementById('userDropdown');
+  if (!drop) return;
+  drop.style.display = drop.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', e => {
+  const btn  = document.getElementById('userMenuBtn');
+  const drop = document.getElementById('userDropdown');
+  if (drop && btn && !btn.contains(e.target) && !drop.contains(e.target)) {
+    drop.style.display = 'none';
+  }
+});
+
+/* ═══════════════════════════════════════════════════
+   THEME TOGGLE
+═══════════════════════════════════════════════════ */
+function toggleTheme() {
+  const html  = document.documentElement;
+  const current = html.getAttribute('data-theme') || 'dark';
+  const next    = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('jr_theme', next);
+  updateThemeIcon(next);
+}
+function updateThemeIcon(theme) {
+  const icon = document.getElementById('themeIcon');
+  if (!icon) return;
+  if (theme === 'light') {
+    icon.className = 'fa fa-sun';
+    document.getElementById('themeToggleBtn').title = 'Switch to dark mode';
+  } else {
+    icon.className = 'fa fa-moon';
+    document.getElementById('themeToggleBtn').title = 'Switch to light mode';
+  }
+}
+
+// Skills loaded from AI Resume Builder — empty until user uploads resume
+const MY_SKILLS_LOWER = JSON.parse(localStorage.getItem('ej_resume_skills') || '[]');
 
 /* ═══════════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', () => {
+  // Restore theme from localStorage (default: dark)
+  const savedTheme = localStorage.getItem('jr_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+
   loadJobs();
   loadStats();
   loadLastFed();
@@ -1161,16 +1338,37 @@ function updateLiveIndicator(source) {
 async function refreshJobs() {
   const btn = document.getElementById('refreshBtn');
   btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Fetching…';
+  btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Starting…';
   btn.disabled = true;
   try {
     const res  = await fetch('/api/refresh', { method: 'POST' });
     const data = await res.json();
-    if (data.status === 'success') {
-      showToast(`✓ Fetched ${data.count} fresh jobs from Adzuna`);
+    if (data.status === 'started' || data.status === 'running') {
+      showToast('🔄 Fetching all jobs in background (10-15 min)… page will auto-reload when done');
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Fetching…';
+      // Poll every 20s until done
+      const poll = setInterval(async () => {
+        try {
+          const sr = await fetch('/api/refresh/status');
+          const sd = await sr.json();
+          if (!sd.running) {
+            clearInterval(poll);
+            showToast(`✓ Done! ${sd.count} jobs loaded`);
+            btn.innerHTML = '<i class="fa fa-rotate"></i> Refresh Jobs';
+            btn.disabled = false;
+            await loadJobs();
+            await loadStats();
+            await loadLastFed();
+          }
+        } catch(e) { /* server may be restarting */ }
+      }, 20000);
+      return; // don't reset button — polling will do it
+    } else if (data.status === 'success') {
+      showToast(`✓ Fetched ${data.count} fresh jobs`);
       await loadJobs();
       await loadStats();
     } else {
-      showToast('⚠ ' + (data.message || 'Refresh failed. Check API key in fetch_jobs.py'));
+      showToast('⚠ ' + (data.message || 'Refresh failed'));
     }
   } catch(e) {
     showToast('⚠ Server error during refresh');
@@ -1214,10 +1412,22 @@ function fitBreakdown(job) {
 /* ═══════════════════════════════════════════════════
    FILTERS & RENDER
 ═══════════════════════════════════════════════════ */
+/* Groups where multiple chips can be active simultaneously */
+const MULTI_SELECT_GROUPS = ['location','salaryinr','category','workmode','jobtype','experience','hasphone'];
+
 function getActiveChip(groupId) {
   const el = document.querySelector(`#filter-${groupId} .chip.active`);
   return el ? el.dataset.val : 'all';
 }
+
+/* Returns array of active values for a group.
+   Returns ['all'] if the "All" chip is active or nothing is active. */
+function getActiveChips(groupId) {
+  const actives = [...document.querySelectorAll(`#filter-${groupId} .chip.active`)].map(c => c.dataset.val);
+  if (!actives.length || actives.includes('all')) return ['all'];
+  return actives;
+}
+
 function getCheckedSkills() {
   return [...document.querySelectorAll('#skillFilter input:checked')].map(i => i.value.toLowerCase());
 }
@@ -1245,16 +1455,17 @@ function formatINR(s) {
 }
 
 function applyAllFilters() {
-  const q         = document.getElementById('searchInput').value.toLowerCase().trim();
-  const region    = getActiveChip('region');
-  const loc       = getActiveChip('location');
-  const salaryINR = getActiveChip('salaryinr');
-  const category  = getActiveChip('category');
-  const workmode  = getActiveChip('workmode');
-  const jobtype   = getActiveChip('jobtype');
-  const experience= getActiveChip('experience');
-  const posted    = getActiveChip('posted');
-  const sortBy    = document.getElementById('sortSelect').value;
+  const q          = document.getElementById('searchInput').value.toLowerCase().trim();
+  const region     = getActiveChip('region');            // single-select
+  const posted     = getActiveChip('posted');            // single-select
+  const locs       = getActiveChips('location');         // multi-select
+  const salaryINRs = getActiveChips('salaryinr');        // multi-select
+  const categories = getActiveChips('category');         // multi-select
+  const workmodes  = getActiveChips('workmode');         // multi-select
+  const jobtypes   = getActiveChips('jobtype');          // multi-select
+  const experiences= getActiveChips('experience');       // multi-select
+  const hasphones  = getActiveChips('hasphone');         // multi-select
+  const sortBy     = document.getElementById('sortSelect').value;
   // Sync mobile sort select to match desktop
   const mobileSort = document.getElementById('mobileSortSelect');
   if (mobileSort && mobileSort.value !== sortBy) mobileSort.value = sortBy;
@@ -1268,7 +1479,7 @@ function applyAllFilters() {
     return t.includes(q);
   });
 
-  /* ── region ─────────────────────────────────────────── */
+  /* ── region (single-select) ─────────────────────────── */
   const REGION_KEYWORDS = {
     'middle-east': ['dubai','abu dhabi','uae','saudi','riyadh','jeddah','bahrain','qatar','doha','kuwait','oman','muscat'],
     'europe':      ['uk','united kingdom','london','manchester','germany','berlin','munich','frankfurt','switzerland','zurich','geneva','france','paris','netherlands','amsterdam','sweden','stockholm','ireland','dublin','spain','madrid','barcelona','italy','milan','rome','austria','vienna','belgium','brussels','denmark','norway','portugal'],
@@ -1284,65 +1495,73 @@ function applyAllFilters() {
     });
   }
 
-  /* ── location ───────────────────────────────────────── */
-  if (loc && loc !== 'all') {
+  /* ── location (multi-select, OR logic) ──────────────── */
+  function matchLoc(h, loc) {
     const l = loc.toLowerCase();
+    if (l === 'bangalore')   return h.includes('bangalore') || h.includes('bengaluru');
+    if (l === 'delhi')       return h.includes('delhi') || h.includes('gurgaon') || h.includes('noida');
+    if (l === 'mumbai')      return h.includes('mumbai') || h.includes('bombay');
+    if (l === 'usa')         return h.includes('usa') || h.includes('united states');
+    if (l === 'london')      return h.includes('london');
+    if (l === 'saudi')       return h.includes('saudi');
+    if (l === 'bahrain')     return h.includes('bahrain');
+    if (l === 'abu dhabi')   return h.includes('abu dhabi');
+    if (l === 'qatar')       return h.includes('qatar') || h.includes('doha');
+    if (l === 'kuwait')      return h.includes('kuwait');
+    if (l === 'hong kong')   return h.includes('hong kong');
+    if (l === 'netherlands') return h.includes('netherlands') || h.includes('amsterdam') || h.includes('rotterdam');
+    if (l === 'ireland')     return h.includes('ireland') || h.includes('dublin');
+    if (l === 'sweden')      return h.includes('sweden') || h.includes('stockholm');
+    if (l === 'spain')       return h.includes('spain') || h.includes('madrid') || h.includes('barcelona');
+    if (l === 'italy')       return h.includes('italy') || h.includes('milan') || h.includes('rome');
+    if (l === 'austria')     return h.includes('austria') || h.includes('vienna');
+    if (l === 'australia')   return h.includes('australia') || h.includes('sydney') || h.includes('melbourne');
+    return h.includes(l);
+  }
+  if (!locs.includes('all')) {
     jobs = jobs.filter(j => {
       const h = [j.city||'', j.country||'', j.location||''].join(' ').toLowerCase();
-      if (l === 'bangalore')   return h.includes('bangalore') || h.includes('bengaluru');
-      if (l === 'delhi')       return h.includes('delhi') || h.includes('gurgaon') || h.includes('noida');
-      if (l === 'mumbai')      return h.includes('mumbai') || h.includes('bombay');
-      if (l === 'usa')         return h.includes('usa') || h.includes('united states');
-      if (l === 'london')      return h.includes('london');
-      if (l === 'saudi')       return h.includes('saudi');
-      if (l === 'bahrain')     return h.includes('bahrain');
-      if (l === 'abu dhabi')   return h.includes('abu dhabi');
-      if (l === 'qatar')       return h.includes('qatar') || h.includes('doha');
-      if (l === 'kuwait')      return h.includes('kuwait');
-      if (l === 'hong kong')   return h.includes('hong kong');
-      if (l === 'netherlands') return h.includes('netherlands') || h.includes('amsterdam') || h.includes('rotterdam');
-      if (l === 'ireland')     return h.includes('ireland') || h.includes('dublin');
-      if (l === 'sweden')      return h.includes('sweden') || h.includes('stockholm');
-      if (l === 'spain')       return h.includes('spain') || h.includes('madrid') || h.includes('barcelona');
-      if (l === 'italy')       return h.includes('italy') || h.includes('milan') || h.includes('rome');
-      if (l === 'austria')     return h.includes('austria') || h.includes('vienna');
-      if (l === 'australia')   return h.includes('australia') || h.includes('sydney') || h.includes('melbourne');
-      return h.includes(l);
+      return locs.some(loc => matchLoc(h, loc));
     });
   }
 
-  /* ── salary INR buckets ─────────────────────────────── */
-  if (salaryINR && salaryINR !== 'all') {
-    jobs = jobs.filter(j => {
+  /* ── salary INR buckets (multi-select, OR logic) ─────── */
+  if (!salaryINRs.includes('all')) {
+    jobs = jobs.filter(j => salaryINRs.some(salaryINR => {
       const cr = parseCR(j.salary_inr_annual);
-      if (salaryINR === 'nd')      return cr === null;
-      if (salaryINR === '<50L')    return cr !== null && cr < 0.5;
+      if (salaryINR === 'nd')        return cr === null;
+      if (salaryINR === '<50L')      return cr !== null && cr < 0.5;
       if (salaryINR === '50L-1.5CR') return cr !== null && cr >= 0.5 && cr <= 1.5;
-      if (salaryINR === '>1.5CR')  return cr !== null && cr > 1.5;
+      if (salaryINR === '>1.5CR')    return cr !== null && cr > 1.5;
       return true;
-    });
+    }));
   }
 
-  /* ── category ───────────────────────────────────────── */
-  if (category && category !== 'all') jobs = jobs.filter(j =>
-    (j.category||'').toLowerCase().includes(category.toLowerCase()));
+  /* ── category (multi-select, OR logic) ──────────────── */
+  if (!categories.includes('all')) {
+    jobs = jobs.filter(j => categories.some(cat =>
+      (j.category||'').toLowerCase().includes(cat.toLowerCase())
+    ));
+  }
 
-  /* ── work mode ──────────────────────────────────────── */
-  if (workmode && workmode !== 'all') {
-    const wl = workmode.toLowerCase();
-    jobs = jobs.filter(j => {
+  /* ── work mode (multi-select, OR logic) ─────────────── */
+  if (!workmodes.includes('all')) {
+    jobs = jobs.filter(j => workmodes.some(workmode => {
+      const wl = workmode.toLowerCase();
       const wm = (j.work_mode||'').toLowerCase();
       if (wl === 'remote') return wm.includes('remote') || wm.includes('wfh');
       return wm.includes(wl);
-    });
+    }));
   }
 
-  /* ── job type ───────────────────────────────────────── */
-  if (jobtype && jobtype !== 'all') jobs = jobs.filter(j => j.job_type === jobtype);
+  /* ── job type (multi-select, OR logic) ──────────────── */
+  if (!jobtypes.includes('all')) {
+    jobs = jobs.filter(j => jobtypes.some(jt => j.job_type === jt));
+  }
 
-  /* ── experience level ───────────────────────────────── */
-  if (experience && experience !== 'all') {
-    jobs = jobs.filter(j => {
+  /* ── experience level (multi-select, OR logic) ───────── */
+  if (!experiences.includes('all')) {
+    jobs = jobs.filter(j => experiences.some(experience => {
       const expMin = j.experience_min ?? 3;
       const expReq = (j.experience_required || '').toLowerCase();
       if (experience === 'fresher')  return expMin <= 2 || expReq.includes('0-') || expReq.includes('junior') || expReq.includes('fresher') || expReq.includes('graduate') || expReq.includes('entry');
@@ -1350,10 +1569,18 @@ function applyAllFilters() {
       if (experience === 'senior')   return expMin >= 5 && expMin < 10;
       if (experience === 'director') return expMin >= 10;
       return true;
-    });
+    }));
   }
 
-  /* ── posted ─────────────────────────────────────────── */
+  /* ── has phone (multi-select, OR logic) ─────────────── */
+  if (!hasphones.includes('all')) {
+    jobs = jobs.filter(j => hasphones.some(hp => {
+      if (hp === 'phone') return j.has_phone || !!(j.hr_contact && j.hr_contact.phone);
+      return true;
+    }));
+  }
+
+  /* ── posted (single-select) ─────────────────────────── */
   if (posted && posted !== 'all') {
     const daysMap = { today: 0, week: 7, month: 30 };
     const maxDays = daysMap[posted] ?? 999;
@@ -1478,6 +1705,7 @@ function jobCard(j) {
       ${wmLabel ? `<span class="ctag wfh"><i class="fa fa-house-laptop"></i> ${wmLabel}</span>` : ''}
       ${isNew ? `<span class="ctag hot"><i class="fa fa-fire"></i> New</span>` : ''}
       ${j.category ? `<span class="ctag cat">${j.category}</span>` : ''}
+      ${(j.has_phone || (j.hr_contact && j.hr_contact.phone)) ? `<span class="ctag phone"><i class="fa fa-phone"></i> ${(j.hr_contact && j.hr_contact.phone) ? j.hr_contact.phone : 'Has Phone'}</span>` : ''}
     </div>
 
     ${(salLocal || salINR) ? `
@@ -1529,6 +1757,18 @@ function openDetail(id) {
 
   panel.classList.add('open');
   inner.innerHTML = buildDetail(job);
+
+  // Track view (fire-and-forget, only when logged in)
+  if (USER_LOGGED_IN) {
+    fetch('/api/track/view', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        job_id: job.id, title: job.title,
+        company: job.company, country: job.country, category: job.category
+      })
+    }).catch(() => {});
+  }
 }
 
 function closeDetail() {
@@ -1704,9 +1944,29 @@ function isValidEmail(email) {
    UTILITIES
 ═══════════════════════════════════════════════════ */
 function toggleChip(el, group) {
-  document.querySelectorAll(`#filter-${group} .chip`).forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  if (group === 'region') filterLocationsByRegion(el.dataset.val);
+  if (MULTI_SELECT_GROUPS.includes(group)) {
+    // ── Multi-select behaviour ──────────────────────────
+    const val = el.dataset.val;
+    if (val === 'all') {
+      // "All" clicked → clear everything, activate only "All"
+      document.querySelectorAll(`#filter-${group} .chip`).forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+    } else {
+      // Deactivate the "All" chip
+      const allChip = document.querySelector(`#filter-${group} .chip[data-val="all"]`);
+      if (allChip) allChip.classList.remove('active');
+      // Toggle this chip
+      el.classList.toggle('active');
+      // If nothing is left active, fall back to "All"
+      const anyActive = document.querySelector(`#filter-${group} .chip.active`);
+      if (!anyActive && allChip) allChip.classList.add('active');
+    }
+  } else {
+    // ── Single-select behaviour (region, posted) ────────
+    document.querySelectorAll(`#filter-${group} .chip`).forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    if (group === 'region') filterLocationsByRegion(el.dataset.val);
+  }
   applyAllFilters();
 }
 
@@ -1838,6 +2098,21 @@ function openApply(e, url, type) {
   window.open(url, '_blank');
   if (type === 'google') showToast('🔍 Google Jobs — search results show current openings for this role');
   else if (type === 'careers') showToast('Opening careers page — search for the role there');
+
+  // Track apply click
+  if (USER_LOGGED_IN && activeJobId) {
+    const job = allJobs.find(j => j.id === activeJobId);
+    if (job) {
+      fetch('/api/track/apply', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          job_id: job.id, title: job.title,
+          company: job.company, country: job.country, category: job.category
+        })
+      }).catch(() => {});
+    }
+  }
 }
 
 function copyLink(e, id) {
@@ -1877,13 +2152,16 @@ function closeMobileFilters() {
 }
 
 function clearAllFilters() {
-  ['region','location','salaryinr','category','workmode','jobtype','posted'].forEach(g => clearFilter(g));
+  ['region','location','salaryinr','category','workmode','jobtype','experience','hasphone','posted'].forEach(g => clearFilter(g));
   updateFilterBadge();
 }
 
 function updateFilterBadge() {
-  const active = ['region','location','salaryinr','category','workmode','jobtype','experience','posted']
-    .filter(g => getActiveChip(g) !== 'all').length;
+  let active = 0;
+  // Single-select groups: active if not 'all'
+  ['region','posted'].forEach(g => { if (getActiveChip(g) !== 'all') active++; });
+  // Multi-select groups: active if selection is not just ['all']
+  MULTI_SELECT_GROUPS.forEach(g => { if (!getActiveChips(g).includes('all')) active++; });
   const badge = document.getElementById('mfbBadge');
   if (badge) {
     badge.textContent = active;
